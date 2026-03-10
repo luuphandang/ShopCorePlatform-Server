@@ -24,7 +24,6 @@ export class ProductEventsController extends AbstractEvents {
       `Product created: ${JSON.stringify(message)}`,
       `${this.className}:productCreatedPublish`,
     );
-    console.log(message);
 
     return {
       success: true,
@@ -44,7 +43,6 @@ export class ProductEventsController extends AbstractEvents {
       `Product created: ${JSON.stringify(message)}`,
       `${this.className}:productCreatedRequest`,
     );
-    console.log(message);
 
     return {
       success: true,

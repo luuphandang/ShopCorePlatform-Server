@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 
 import { RABBIT_EVENT_METADATA, RABBIT_RPC_METADATA } from './rabbitmq.decorator';
@@ -6,6 +6,8 @@ import { RabbitMQService } from './rabbitmq.service';
 
 @Injectable()
 export class RabbitExplorer implements OnModuleInit {
+  private readonly logger = new Logger(RabbitExplorer.name);
+
   constructor(
     private readonly discovery: DiscoveryService,
     private readonly metadataScanner: MetadataScanner,
@@ -66,7 +68,7 @@ export class RabbitExplorer implements OnModuleInit {
           return;
         }
       } catch (error) {
-        console.log('RabbitMQService is not ready yet', error);
+        this.logger.warn('RabbitMQService is not ready yet', error);
       }
 
       await new Promise((resolve) => setTimeout(resolve, 100));

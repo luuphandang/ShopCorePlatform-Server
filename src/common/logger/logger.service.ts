@@ -1,5 +1,6 @@
 import { Injectable, LoggerService } from '@nestjs/common';
 import { createLogger, format, Logger, transports } from 'winston';
+import 'winston-daily-rotate-file';
 
 // Logger level: error > warn > info > http > verbose > debug > silly
 
@@ -8,14 +9,16 @@ export class AppLogger implements LoggerService {
   private readonly logger: Logger;
 
   constructor() {
+    const fileFormat = format.combine(
+      format.timestamp(),
+      format.printf(({ timestamp, level, message, context }) => {
+        return `${timestamp} [${level.toUpperCase()}]: { context: ${context || 'N/A'}, timestamp: ${timestamp}, message: ${message} }`;
+      }),
+    );
+
     this.logger = createLogger({
       level: 'info',
-      format: format.combine(
-        format.timestamp(),
-        format.printf(({ timestamp, level, message, context }) => {
-          return `${timestamp} [${level.toUpperCase()}]: { context: ${context || 'N/A'}, timestamp: ${timestamp}, message: ${message} }`;
-        }),
-      ),
+      format: fileFormat,
       transports: [
         new transports.Console({
           level: 'silly',
@@ -27,8 +30,21 @@ export class AppLogger implements LoggerService {
             }),
           ),
         }),
-        new transports.File({ filename: 'logs/error.log', level: 'error' }),
-        new transports.File({ filename: 'logs/combined.log' }),
+        new transports.DailyRotateFile({
+          filename: 'logs/error-%DATE%.log',
+          level: 'error',
+          datePattern: 'YYYY-MM-DD',
+          maxSize: '10m',
+          maxFiles: '30d',
+          zippedArchive: true,
+        }),
+        new transports.DailyRotateFile({
+          filename: 'logs/combined-%DATE%.log',
+          datePattern: 'YYYY-MM-DD',
+          maxSize: '20m',
+          maxFiles: '14d',
+          zippedArchive: true,
+        }),
       ],
     });
   }

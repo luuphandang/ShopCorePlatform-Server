@@ -1,4 +1,4 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
@@ -23,18 +23,19 @@ export class RedisModule {
           provide: MODULE_CONFIGS.REDIS,
           useFactory: async (configService: ConfigService<EnvironmentVariables>) => {
             const config = redisConfig(configService);
+            const logger = new Logger('RedisModule');
             const redis = new Redis(config);
 
             redis.on('connect', () => {
-              console.log('Redis connected');
+              logger.log('Redis connected');
             });
 
             redis.on('error', (error) => {
-              console.error('Redis error:', error);
+              logger.error('Redis error:', error);
             });
 
             redis.on('close', () => {
-              console.log('Redis connection closed');
+              logger.warn('Redis connection closed');
             });
 
             await redis.connect();

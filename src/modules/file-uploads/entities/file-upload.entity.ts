@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import slugify from 'slugify';
 import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
@@ -53,7 +54,7 @@ export class FileUpload extends AbstractEntity {
     try {
       this.slug = slugify(this.name, { trim: true, lower: true });
     } catch (error) {
-      console.error('[FileUpload:Entity]:', error);
+      new Logger(FileUpload.name).error(error);
       throw error;
     }
   }

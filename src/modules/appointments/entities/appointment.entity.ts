@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BeforeInsert, BeforeUpdate, Column, Entity } from 'typeorm';
 
@@ -53,7 +54,7 @@ export class Appointment extends AbstractEntity {
         this.status = EAppointmentStatus.PENDING;
       }
     } catch (error) {
-      console.error('[Appointment:Entity]:', error);
+      new Logger(Appointment.name).error(error);
       throw error;
     }
   }

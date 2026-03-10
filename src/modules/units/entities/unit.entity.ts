@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Field, ObjectType } from '@nestjs/graphql';
 import slugify from 'slugify';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
@@ -32,7 +33,7 @@ export class Unit extends AbstractEntity {
     try {
       this.slug = slugify(this.name, { trim: true, lower: true });
     } catch (error) {
-      console.error('[Unit:Entity]:', error);
+      new Logger(Unit.name).error(error);
       throw error;
     }
   }

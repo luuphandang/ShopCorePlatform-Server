@@ -24,7 +24,6 @@ export class UnitEventsController extends AbstractEvents {
       `Unit created: ${JSON.stringify(message)}`,
       `${this.className}:unitCreatedPublish`,
     );
-    console.log(message);
 
     return {
       success: true,
@@ -44,7 +43,6 @@ export class UnitEventsController extends AbstractEvents {
       `Unit created: ${JSON.stringify(message)}`,
       `${this.className}:unitCreatedRequest`,
     );
-    console.log(message);
 
     return {
       success: true,

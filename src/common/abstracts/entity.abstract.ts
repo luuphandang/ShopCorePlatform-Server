@@ -8,6 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { Logger } from '@nestjs/common';
+
 import { CODE_PREFIX } from '../constants/code-prefix.constant';
 import { StringUtil } from '../utils/string.util';
 
@@ -56,7 +58,7 @@ export abstract class AbstractEntity {
         this.code = StringUtil.generateCode(CODE_PREFIX[this.constructor.name]);
       }
     } catch (error) {
-      console.error(`[${this.constructor.name}:Entity]:`, error);
+      new Logger(this.constructor.name).error(error);
       throw error;
     }
   }

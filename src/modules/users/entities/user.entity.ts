@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Field, HideField, Int, ObjectType } from '@nestjs/graphql';
 import { hash } from 'bcrypt';
 import {
@@ -99,7 +100,7 @@ export class User extends AbstractEntity {
         this.updated_by = this.id;
       }
     } catch (error) {
-      console.error('Error in BeforeInsert/BeforeUpdate user:', error);
+      new Logger(User.name).error(error);
       throw error;
     }
   }

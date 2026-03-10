@@ -5,6 +5,7 @@ import { firstValueFrom, map, Observable, take, timeout as rxTimeout } from 'rxj
 import { AbstractBase } from '../abstracts/base.abstract';
 import { CoreContext } from '../contexts';
 import { RabbitMQModuleOptions } from './rabbitmq.module';
+import { MODULE_CONFIGS } from '../constants/module.constant';
 
 @Injectable()
 export class RabbitMQService extends AbstractBase implements OnModuleInit, OnModuleDestroy {
@@ -15,7 +16,7 @@ export class RabbitMQService extends AbstractBase implements OnModuleInit, OnMod
 
   constructor(
     coreContext: CoreContext,
-    @Inject('RABBITMQ_CONFIG') rabbitConfig: RabbitMQModuleOptions,
+    @Inject(MODULE_CONFIGS.RABBITMQ) rabbitConfig: RabbitMQModuleOptions,
   ) {
     super(coreContext);
 

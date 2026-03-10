@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import slugify from 'slugify';
 import {
@@ -123,7 +124,7 @@ export class ProductVariant extends AbstractEntity {
 
       this.slug = slugify(this.name, { trim: true, lower: true });
     } catch (error) {
-      console.error('[Variant:Entity]:', error);
+      new Logger(ProductVariant.name).error(error);
       throw error;
     }
   }
