@@ -1,0 +1,5 @@
+export const MODULE_CONFIGS = Object.freeze({
+    RABBITMQ: 'RABBITMQ_CONFIG',
+    REDIS: 'REDIS_CONFIG',
+    CUSTOM: 'CUSTOM_CONFIG',
+});

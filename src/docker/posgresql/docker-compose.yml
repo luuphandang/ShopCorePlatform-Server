@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_database
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 'phandangluu.07061993'
+      POSTGRES_DB: photocopy
+    ports:
+      - '5432:5432'
+    # volumes:
+    #   - ./postgres_database:/var/lib/postgresql/data
+# volumes:
+#   postgres_database:
+#     driver: local

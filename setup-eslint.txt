@@ -1,0 +1,24 @@
+1. install dependency
+    npm install --save-dev eslint prettier eslint-config-prettier eslint-plugin-prettier eslint-plugin-import eslint-plugin-unused-imports eslint-plugin-simple-import-sort eslint-import-resolver-typescript
+
+2. Create .eslintrc.js
+
+3. Create .prettierrc.json
+
+4. Add Lint Scripts to package.json
+
+    "scripts": {
+        "lint": "eslint . --ext .ts,.tsx --fix",
+        "format": "prettier --write ."
+    }
+
+*** Unable to resolve path to module
+    rm -rf node_modules/.cache
+
+    npx eslint src --ext .ts,.tsx
+
+    rm -rf node_modules/.cache
+    
+    rm -rf .eslintcache
+
+    rm -rf node_modules package-lock.json

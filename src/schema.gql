@@ -1,0 +1,1379 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input AddToCartInput {
+  conversion_unit_id: Int!
+  note: String
+  product_id: Int!
+  quantity: Int!
+  variant_id: Int!
+}
+
+"""address"""
+type Address {
+  address: String!
+  code: String!
+  country: String
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  district: String
+  email: String
+  id: Int!
+  is_default: Boolean
+  is_deleted: Boolean
+  latitude: Float
+  longitude: Float
+  name: String!
+  phone: String!
+  postal_code: String
+  province: String
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  ward: String
+}
+
+input AdminSignedUrlInput {
+  entity: EFileEntity!
+  file_name: String!
+  file_type: String!
+  owner_by: Float
+}
+
+"""appointment"""
+type Appointment {
+  attachment_ids: [Int!]
+  attachments: [FileUpload!]
+  code: String!
+  content: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  customer: User
+  customer_id: Int
+  deleted_at: DateTime
+  deleted_by: Int
+  email: String
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  phone: String!
+  status: EAppointmentStatus
+  title: String!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+input AssignCategoryInput {
+  children_ids: [Int!]
+  code: String
+  description: String
+  id: Int
+  keywords: [String!]
+  name: String
+  parent_id: Int
+  short_description: String
+  thumbnail: AssignFileUploadInput
+  type: ECategoryType!
+}
+
+input AssignConversionUnitInput {
+  conversion_rate: Int!
+  description: String
+  id: Int
+  price: Int!
+  product_id: Int
+  regular_price: Int!
+  sale_price: Int!
+  unit: AssignUnitInput!
+  unit_id: Int
+  variant_id: Int
+}
+
+input AssignFileUploadInput {
+  id: Int
+  name: String!
+  owner_by: Int
+  size: Int
+  status: EFileStatus = ACTIVATED
+  type: EFileType!
+  url: String!
+}
+
+input AssignPermissionInput {
+  id: Float
+  label: String!
+  value: String
+}
+
+input AssignProductAttributeInput {
+  id: Int
+  name: String
+  values: [AssignProductAttributeValueInput!]
+}
+
+input AssignProductAttributeValueInput {
+  attribute_id: Int
+  id: Int
+  value: String
+}
+
+input AssignProductVariantInput {
+  attributes: [AssignProductAttributeInput!]
+  code: String
+  conversion_units: [AssignConversionUnitInput!]
+  description: String
+  gallery_images: [AssignFileUploadInput!]
+  id: Int
+  name: String!
+  sku: String
+  status: EProductStatus = ACTIVATED
+  values: [AssignProductAttributeValueInput!]
+}
+
+input AssignRoleInput {
+  id: Float
+}
+
+input AssignUnitInput {
+  description: String
+  id: Int
+  name: String!
+}
+
+"""blog"""
+type Blog {
+  categories: [Category!]
+  category_ids: [Int!]
+  code: String!
+  content: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  meta_description: String
+  meta_keywords: String
+  meta_robots: String
+  meta_title: String
+  short_description: String
+  slug: String!
+  title: String!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+"""booking"""
+type Booking {
+  attachment_ids: [Int!]
+  attachments: [FileUpload!]
+  categories: [Category!]
+  category_ids: [Int!]
+  code: String!
+  content: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  customer: User
+  customer_id: Int
+  deleted_at: DateTime
+  deleted_by: Int
+  email: String!
+  estimated_date: DateTime
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  phone: String!
+  product_ids: [Int!]
+  products: [Product!]
+  status: EBookingStatus!
+  type: EBookingType!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+"""category"""
+type Category {
+  children: [Category!]
+  children_ids: [Int!]
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  description: String
+  id: Int!
+  is_deleted: Boolean
+  keywords: [String!]
+  name: String!
+  parent_id: Int
+  short_description: String
+  slug: String!
+  thumbnail: FileUpload
+  thumbnail_id: Int
+  type: ECategoryType!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+input CheckoutCartInput {
+  address_id: Int
+  cancel_at: DateTime
+  completed_at: DateTime
+  delivery_at: DateTime
+  estimated_delivery_at: DateTime
+  note: String
+  order_detail_id: Int
+  payment_method: String
+  pickup_at: DateTime
+  return_at: DateTime
+  status: EShippingStatus
+  to_address: String!
+  to_country: String
+  to_district: String
+  to_email: String
+  to_latitude: Float
+  to_longitude: Float
+  to_name: String!
+  to_phone: String!
+  to_postal_code: String
+  to_province: String
+  to_ward: String
+  vouchers: [String!]
+}
+
+"""conversion unit"""
+type ConversionUnit {
+  code: String!
+  conversion_rate: Int!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  price: Int!
+  product_id: Int
+  regular_price: Int!
+  sale_price: Int!
+  unit: Unit
+  unit_id: Int!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  variant_id: Int
+}
+
+type CookieOption {
+  domain: String
+  httpOnly: Boolean
+  maxAge: Float
+  path: String
+  sameSite: String
+  secure: Boolean
+}
+
+input CreateAddressInput {
+  address: String!
+  country: String
+  district: String
+  email: String
+  is_default: Boolean
+  latitude: Float
+  longitude: Float
+  name: String!
+  phone: String!
+  postal_code: String
+  province: String
+  ward: String
+}
+
+input CreateAppointmentInput {
+  attachment_ids: [Int!]
+  content: String!
+  customer_id: Int
+  email: String
+  name: String!
+  phone: String!
+  product_id: String
+  product_name: String
+  title: String!
+}
+
+input CreateBlogInput {
+  categories: [AssignCategoryInput!]
+  content: String!
+  meta_description: String
+  meta_keywords: String
+  meta_robots: String
+  meta_title: String
+  short_description: String
+  title: String!
+}
+
+input CreateBookingInput {
+  attachments: [AssignFileUploadInput!]
+  category_ids: [Int!]
+  content: String!
+  customer_id: Int
+  email: String
+  estimated_date: DateTime
+  name: String!
+  phone: String!
+  product_ids: [Int!]
+  status: EBookingStatus = PENDING
+  type: EBookingType!
+}
+
+input CreateCategoryInput {
+  children_ids: [Int!]
+  description: String
+  keywords: [String!]
+  name: String
+  parent_id: Int
+  short_description: String
+  thumbnail: AssignFileUploadInput
+  type: ECategoryType!
+}
+
+input CreateConversionUnitInput {
+  conversion_rate: Int!
+  description: String
+  price: Int!
+  product_id: Int
+  regular_price: Int!
+  sale_price: Int!
+  unit: AssignUnitInput!
+  unit_id: Int
+  variant_id: Int
+}
+
+input CreateFileUploadInput {
+  name: String!
+  owner_by: Int
+  size: Int
+  status: EFileStatus = ACTIVATED
+  type: EFileType!
+  url: String!
+}
+
+input CreateOrderDetailInput {
+  conversion_unit_id: Int!
+  discount: Int!
+  final_cost: Int!
+  note: String
+  order_id: Int
+  payment_status: EPaymentStatus = UNPAID
+  price: Int!
+  product_id: Int!
+  quantity: Int!
+  service_fee: Int!
+  shipping_status: EShippingStatus = NOT_REQUIRED
+  status: EOrderStatus = PENDING
+  tax: Int!
+  total_cost: Int!
+  variant_id: Int!
+}
+
+input CreateOrderInput {
+  code: String
+  customer_id: Int
+  discount: Int = 0
+  final_cost: Int = 0
+  note: String
+  order_details: [CreateOrderDetailInput!]
+  payment_status: EPaymentStatus = UNPAID
+  service_fee: Int = 0
+  shipping_status: EShippingStatus = NOT_REQUIRED
+  status: EOrderStatus = PENDING
+  tax: Int = 0
+  total_cost: Int = 0
+}
+
+input CreateProductAttributeInput {
+  name: String
+  values: [AssignProductAttributeValueInput!]
+}
+
+input CreateProductAttributeValueInput {
+  attribute_id: Int
+  value: String
+}
+
+input CreateProductInput {
+  attachments: [AssignFileUploadInput!]
+  attributes: [AssignProductAttributeInput!]
+  base_unit: AssignConversionUnitInput
+  categories: [AssignCategoryInput!]
+  code: String
+  conversion_units: [AssignConversionUnitInput!]
+  description: String
+  features: [String!]
+  gallery_images: [AssignFileUploadInput!]
+  name: String!
+  short_description: String
+  sku: String
+  status: EProductStatus = ACTIVATED
+  thumbnail: AssignFileUploadInput
+  turnaround: String
+  type: EProductType = PRODUCT
+  values: [AssignProductAttributeValueInput!]
+  variants: [AssignProductVariantInput!]
+}
+
+input CreateProductReviewInput {
+  attachment_ids: [Int!]
+  content: String!
+  customer_id: Int!
+  product_id: Int!
+  rate: Int!
+}
+
+input CreateRoleInput {
+  description: String
+  name: String!
+  permissions: [AssignPermissionInput!]
+}
+
+input CreateUnitInput {
+  description: String
+  name: String!
+}
+
+input CreateUserInput {
+  address: String
+  avatar: AssignFileUploadInput
+  birthday: String
+  email: String!
+  first_name: String
+  last_name: String!
+  password: String!
+  phone: String!
+  roles: [AssignRoleInput!]
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Enum for appointment status"""
+enum EAppointmentStatus {
+  CANCELLED
+  COMPLETED
+  CONFIRMED
+  PENDING
+  RESCHEDULED
+}
+
+"""Enum for booking status"""
+enum EBookingStatus {
+  CANCELLED
+  COMPLETED
+  CONFIRMED
+  PENDING
+  RESCHEDULED
+}
+
+"""Enum for booking type"""
+enum EBookingType {
+  PRODUCT
+  SERVICE
+}
+
+"""Enum for category types"""
+enum ECategoryType {
+  BLOG
+  PRODUCT
+  SERVICE
+}
+
+"""Enum for file upload entity"""
+enum EFileEntity {
+  ORDER
+  OTHER
+  PRODUCT
+  USER
+  VARIANT
+}
+
+"""Enum for file upload status"""
+enum EFileStatus {
+  ACTIVATED
+  DEACTIVATED
+}
+
+"""Enum for file upload type"""
+enum EFileType {
+  ARCHIVE
+  EXCEL
+  IMAGE
+  OTHER
+  PDF
+  POWERPOINT
+  TEXT
+  VIDEO
+  WORD
+}
+
+"""Enum for order statuses"""
+enum EOrderStatus {
+  CANCELLED
+  CART
+  COMPLETED
+  CONFIRMED
+  FAILED
+  ON_HOLD
+  PENDING
+  PROCESSING
+  REFUNDED
+  SHIPPED
+}
+
+"""Enum for graphql pagination types"""
+enum EPaginationType {
+  ALL
+  PAGINATION
+}
+
+"""Enum for payment statuses"""
+enum EPaymentStatus {
+  CANCELLED
+  COD_COLLECTED
+  COD_FAILED
+  COD_PENDING
+  FAILED
+  INSTALLMENT_ONGOING
+  OVERDUE
+  PAID
+  PARTIAL_PAID
+  PARTIAL_REFUNDED
+  REFUNDED
+  UNPAID
+}
+
+"""Enum for product statuses"""
+enum EProductStatus {
+  ACTIVATED
+  DEACTIVATED
+}
+
+"""Enum for product types"""
+enum EProductType {
+  PRODUCT
+  SERVICE
+}
+
+"""Enum for shipping statuses"""
+enum EShippingStatus {
+  CONFIRMED
+  DELIVERED
+  IN_TRANSIT
+  LOST
+  NOT_REQUIRED
+  PENDING
+  RETURNED
+  SHIPPED
+}
+
+"""file_upload"""
+type FileUpload {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  owner: User
+  owner_by: Int
+  size: Int
+  slug: String!
+  status: EFileStatus!
+  type: EFileType!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  url: String!
+}
+
+type GetAddressType {
+  data: [Address!]
+  metadata: MetadataResponse
+}
+
+type GetAppointmentType {
+  data: [Appointment!]
+  metadata: MetadataResponse
+}
+
+type GetAttributeType {
+  data: [ProductAttribute!]
+  metadata: MetadataResponse
+}
+
+type GetAttributeValueType {
+  data: [ProductAttributeValue!]
+  metadata: MetadataResponse
+}
+
+type GetBlogType {
+  data: [Blog!]
+  metadata: MetadataResponse
+}
+
+type GetBookingType {
+  data: [Booking!]
+  metadata: MetadataResponse
+}
+
+type GetCategoryType {
+  data: [Category!]
+  metadata: MetadataResponse
+}
+
+type GetConversionUnitType {
+  data: [ConversionUnit!]
+  metadata: MetadataResponse
+}
+
+type GetFileUploadType {
+  data: [FileUpload!]
+  metadata: MetadataResponse
+}
+
+input GetManyInput {
+  """{key: ASC or DESC}"""
+  order: JSON
+  pagination: IPagination
+  where: JSON
+}
+
+input GetOneInput {
+  where: JSON!
+}
+
+type GetOrderShippingType {
+  data: [OrderShipping!]
+  metadata: MetadataResponse
+}
+
+type GetOrderType {
+  data: [Order!]
+  metadata: MetadataResponse
+}
+
+type GetPermissionType {
+  data: [Permission!]
+  metadata: MetadataResponse
+}
+
+type GetProductReviewType {
+  data: [ProductReview!]
+  metadata: MetadataResponse
+}
+
+type GetProductType {
+  data: [Product!]
+  metadata: MetadataResponse
+}
+
+type GetRoleType {
+  data: [Role!]
+  metadata: MetadataResponse
+}
+
+type GetUnitType {
+  data: [Unit!]
+  metadata: MetadataResponse
+}
+
+type GetUserType {
+  data: [User!]
+  metadata: MetadataResponse
+}
+
+input IPagination {
+  """Size of page"""
+  limit: Int
+
+  """Started from 0"""
+  page: Int
+
+  """Pagination type"""
+  pagination_type: EPaginationType
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
+type JwtWithUser {
+  access_token: String!
+  options: CookieOption!
+  user: User!
+}
+
+type MetadataResponse {
+  current_page: Float
+  page_size: Float
+  total_items: Float
+  total_pages: Float
+}
+
+type Mutation {
+  addToCart(code: String!, data: AddToCartInput!): Order!
+  adminSignedUrl(data: AdminSignedUrlInput!): SignedUrlResponse!
+  cancelledAppointment(id: Int!): Appointment!
+  cancelledBooking(id: Int!): Booking!
+  cancelledOrder(id: Int!): Order
+  checkoutCart(code: String!, data: CheckoutCartInput!): Order!
+  clearCart(code: String!): Order!
+  completedAppointment(id: Int!): Appointment!
+  completedBooking(id: Int!): Booking!
+  completedOrder(id: Int!): Order
+  confirmedAppointment(id: Int!): Appointment!
+  confirmedBooking(id: Int!): Booking!
+  confirmedOrder(id: Int!): Order
+  createAddress(data: CreateAddressInput!): Address!
+  createAppointment(data: CreateAppointmentInput!): Appointment!
+  createBlog(data: CreateBlogInput!): Blog!
+  createBooking(data: CreateBookingInput!): Booking!
+  createCart(data: CreateOrderInput!): Order!
+  createCategory(data: CreateCategoryInput!): Category!
+  createConversionUnit(data: CreateConversionUnitInput!): ConversionUnit!
+  createFile(data: CreateFileUploadInput!): FileUpload!
+  createOrder(data: CreateOrderInput!): Order!
+  createProduct(data: CreateProductInput!): Product!
+  createProductAttribute(data: CreateProductAttributeInput!): ProductAttribute!
+  createProductAttributeValue(data: CreateProductAttributeValueInput!): ProductAttributeValue!
+  createReview(data: CreateProductReviewInput!): ProductReview!
+  createRole(data: CreateRoleInput!): Role!
+  createUnit(data: CreateUnitInput!): Unit!
+  createUser(data: CreateUserInput!): User!
+  deleteAppointment(id: Int!): Appointment
+  deleteBlog(id: Int!): Blog
+  deleteBooking(id: Int!): Booking
+  deleteCategory(id: Int!): Category
+  deleteConversionUnit(id: Int!): ConversionUnit
+  deleteFile(id: Int!): FileUpload
+  deleteOrder(id: Int!): Order
+  deleteProduct(id: Int!): Product
+  deleteProductAttribute(id: Int!): ProductAttribute
+  deleteProductAttributeValue(id: Int!): ProductAttributeValue
+  deleteReview(id: Int!): ProductReview
+  deleteRole(id: Int!): Role
+  deleteUnit(id: Int!): Unit
+  deleteUser(id: Int!): User
+  inTransitOrder(id: Int!): Order
+  pendingAppointment(id: Int!): Appointment!
+  pendingBooking(id: Int!): Booking!
+  processingOrder(id: Int!): Order
+  refreshToken: JwtWithUser!
+  refundedOrder(id: Int!): Order
+  removeFromCart(code: String!, data: RemoveFromCartInput!): Order!
+  returnedOrder(id: Int!): Order
+  shippedOrder(id: Int!): Order
+  signIn(data: SignInInput!): JwtWithUser!
+  signOut: Boolean!
+  signUp(data: SignUpInput!): JwtWithUser!
+  updateAddress(data: UpdateAddressInput!, id: Int!): Address!
+  updateAppointment(data: UpdateAppointmentInput!, id: Int!): Appointment!
+  updateBlog(data: UpdateBlogInput!, id: Int!): Blog!
+  updateBooking(data: UpdateBookingInput!, id: Int!): Booking!
+  updateCart(code: String!, data: UpdateOrderInput!): Order!
+  updateCategory(data: UpdateCategoryInput!, id: Int!): Category!
+  updateConversionUnit(data: UpdateConversionUnitInput!, id: Int!): ConversionUnit!
+  updateFile(data: UpdateFileUploadInput!, id: Int!): FileUpload!
+  updateOrder(data: UpdateOrderInput!, id: Int!): Order!
+  updateProduct(data: UpdateProductInput!, id: Int!): Product!
+  updateProductAttribute(data: UpdateProductAttributeInput!, id: Int!): ProductAttribute!
+  updateProductAttributeValue(data: UpdateProductAttributeValueInput!, id: Int!): ProductAttributeValue!
+  updateReview(data: UpdateProductReviewInput!, id: Int!): ProductReview!
+  updateRole(data: UpdateRoleInput!, id: Int!): Role!
+  updateUnit(data: UpdateUnitInput!, id: Int!): Unit!
+  updateUser(data: UpdateUserInput!, id: Int!): User!
+  websiteSignedUrl(data: SignedUrlInput!): SignedUrlResponse!
+}
+
+"""order"""
+type Order {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  customer: User
+  customer_id: Int
+  deleted_at: DateTime
+  deleted_by: Int
+  discount: Int!
+  final_cost: Int!
+  histories: [OrderHistory!]
+  id: Int!
+  is_deleted: Boolean
+  note: String
+  order_details: [OrderDetail!]
+  paid: Int!
+  payment_status: EPaymentStatus!
+  remaining: Int!
+  service_fee: Int!
+  shipping_status: EShippingStatus!
+  status: EOrderStatus!
+  tax: Int!
+  total_cost: Int!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+"""order_detail"""
+type OrderDetail {
+  code: String!
+  conversion_unit: ConversionUnit
+  conversion_unit_id: Int!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  discount: Int!
+  final_cost: Int!
+  id: Int!
+  is_deleted: Boolean
+  note: String
+  order_id: Int!
+  payment_status: EPaymentStatus!
+  price: Int!
+  product: Product
+  product_id: Int!
+  quantity: Int!
+  service_fee: Int!
+  shipping: OrderShipping
+  shipping_status: EShippingStatus!
+  status: EOrderStatus!
+  tax: Int!
+  total_cost: Int!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  variant: ProductVariant
+  variant_id: Int!
+}
+
+"""order_history"""
+type OrderHistory {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  order_detail_id: Int
+  order_id: Int
+  shipping_status: EShippingStatus
+  status: EOrderStatus
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+"""order_shipping"""
+type OrderShipping {
+  address_id: Int
+  cancel_at: DateTime
+  code: String!
+  completed_at: DateTime
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  delivery_at: DateTime
+  estimated_delivery_at: DateTime
+  id: Int!
+  is_deleted: Boolean
+  note: String
+  order_detail_id: Int!
+  pickup_at: DateTime
+  return_at: DateTime
+  status: EShippingStatus
+  to_address: String!
+  to_country: String
+  to_district: String
+  to_email: String
+  to_latitude: Float
+  to_longitude: Float
+  to_name: String!
+  to_phone: String!
+  to_postal_code: String
+  to_province: String
+  to_ward: String
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+"""permission"""
+type Permission {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  label: String!
+  updated_at: DateTime
+  updated_by: Int
+  value: String!
+}
+
+"""product"""
+type Product {
+  attachment_ids: [Int!]
+  attachments: [FileUpload!]
+  attribute_ids: [Int!]
+  attribute_value_ids: [Int!]
+  attributes: [ProductAttribute!]
+  average_rating: Int
+  base_unit: ConversionUnit
+  base_unit_id: Int
+  categories: [Category!]
+  category_ids: [Int!]
+  code: String!
+  conversion_units: [ConversionUnit!]
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  description: String
+  features: [String!]
+  gallery_image_ids: [Int!]
+  gallery_images: [FileUpload!]
+  id: Int!
+  is_deleted: Boolean
+  likes: Int
+  name: String!
+  product_reviews: [ProductReview!]
+  rating_count: Int
+  short_description: String
+  sku: String
+  slug: String
+  status: EProductStatus!
+  thumbnail: FileUpload
+  thumbnail_id: Int
+  turnaround: String
+  type: EProductType!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  values: [ProductAttributeValue!]
+  variants: [ProductVariant!]
+}
+
+"""product_attribute"""
+type ProductAttribute {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  values: [ProductAttributeValue!]
+}
+
+"""product_attribute_value"""
+type ProductAttributeValue {
+  attribute_id: Float!
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  value: String!
+}
+
+"""product_review"""
+type ProductReview {
+  attachment_ids: [Int!]
+  attachments: [FileUpload!]
+  code: String!
+  content: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  id: Int!
+  is_deleted: Boolean
+  product_id: Int!
+  rate: Int!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  user_id: Int!
+}
+
+"""product_variant"""
+type ProductVariant {
+  attribute_ids: [Int!]
+  attribute_value_ids: [Int!]
+  attributes: [ProductAttribute!]
+  base_unit: ConversionUnit
+  base_unit_id: Int
+  code: String!
+  conversion_units: [ConversionUnit!]
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  description: String
+  gallery_image_ids: [Int!]
+  gallery_images: [FileUpload!]
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  product_id: Int!
+  sku: String
+  slug: String
+  status: EProductStatus!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+  values: [ProductAttributeValue!]
+}
+
+type Query {
+  address(query: GetOneInput): Address
+  addresses(query: GetManyInput): GetAddressType!
+  appointment(query: GetOneInput): Appointment
+  appointments(query: GetManyInput): GetAppointmentType!
+  blog(query: GetOneInput): Blog
+  blogs(query: GetManyInput): GetBlogType!
+  booking(query: GetOneInput): Booking
+  bookings(query: GetManyInput): GetBookingType!
+  categories(query: GetManyInput): GetCategoryType!
+  category(query: GetOneInput): Category
+  conversionUnit(query: GetOneInput): ConversionUnit
+  conversionUnits(query: GetManyInput): GetConversionUnitType!
+  file(query: GetOneInput): FileUpload
+  files(query: GetManyInput): GetFileUploadType!
+  myAddress(query: GetOneInput): Address
+  myAddresses(query: GetManyInput): GetAddressType!
+  myAppointment(query: GetOneInput): Appointment
+  myAppointments(query: GetManyInput): GetAppointmentType!
+  myBooking(query: GetOneInput): Booking
+  myBookings(query: GetManyInput): GetBookingType!
+  myCart(query: GetOneInput): Order
+  myFile(query: GetOneInput): FileUpload
+  myFiles(query: GetManyInput): GetFileUploadType!
+  myOrder(query: GetOneInput): Order
+  myOrders(query: GetManyInput): GetOrderType!
+  myPermissions(query: GetManyInput): GetPermissionType!
+  myUser(query: GetOneInput): User
+  order(query: GetOneInput): Order
+  orders(query: GetManyInput): GetOrderType!
+  permission(query: GetOneInput): Permission
+  permissions(query: GetManyInput): GetPermissionType!
+  product(query: GetOneInput): Product
+  productAttribute(query: GetOneInput): ProductAttribute
+  productAttributeValue(query: GetOneInput): ProductAttributeValue
+  productAttributeValues(query: GetManyInput): GetAttributeValueType!
+  productAttributes(query: GetManyInput): GetAttributeType!
+  products(query: GetManyInput): GetProductType!
+  review(query: GetOneInput): ProductReview
+  reviews(query: GetManyInput): GetProductReviewType!
+  role(query: GetOneInput): Role
+  roles(query: GetManyInput): GetRoleType!
+  shipping(query: GetOneInput): OrderShipping
+  shippings(query: GetManyInput): GetOrderShippingType!
+  trackingOrder(query: GetOneInput): Order
+  unit(query: GetOneInput): Unit
+  units(query: GetManyInput): GetUnitType!
+  user(query: GetOneInput): User
+  users(query: GetManyInput): GetUserType!
+}
+
+input RemoveFromCartInput {
+  conversion_unit_id: Int!
+  product_id: Int!
+  variant_id: Int!
+}
+
+"""role"""
+type Role {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  description: String
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  permission_ids: [Int!]
+  permissions: [Permission!]
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+input SignInInput {
+  password: String!
+  phone: String!
+}
+
+input SignUpInput {
+  last_name: String!
+  password: String!
+  phone: String!
+}
+
+input SignedUrlInput {
+  file_name: String!
+  file_type: String!
+  owner_by: Float
+}
+
+type SignedUrlResponse {
+  file_upload: FileUpload
+  signed_url: String
+}
+
+"""unit"""
+type Unit {
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  description: String
+  id: Int!
+  is_deleted: Boolean
+  name: String!
+  slug: String!
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}
+
+input UpdateAddressInput {
+  address: String
+  country: String
+  district: String
+  email: String
+  is_default: Boolean
+  latitude: Float
+  longitude: Float
+  name: String
+  phone: String
+  postal_code: String
+  province: String
+  ward: String
+}
+
+input UpdateAppointmentInput {
+  attachment_ids: [Int!]
+  content: String
+  customer_id: Int
+  email: String
+  name: String
+  phone: String
+  product_id: String
+  product_name: String
+  title: String
+}
+
+input UpdateBlogInput {
+  categories: [AssignCategoryInput!]
+  content: String
+  meta_description: String
+  meta_keywords: String
+  meta_robots: String
+  meta_title: String
+  short_description: String
+  title: String
+}
+
+input UpdateBookingInput {
+  attachments: [AssignFileUploadInput!]
+  category_ids: [Int!]
+  content: String
+  customer_id: Int
+  email: String
+  estimated_date: DateTime
+  name: String
+  phone: String
+  product_ids: [Int!]
+  status: EBookingStatus = PENDING
+  type: EBookingType
+}
+
+input UpdateCategoryInput {
+  children_ids: [Int!]
+  description: String
+  keywords: [String!]
+  name: String
+  parent_id: Int
+  short_description: String
+  thumbnail: AssignFileUploadInput
+  type: ECategoryType
+}
+
+input UpdateConversionUnitInput {
+  conversion_rate: Int
+  description: String
+  price: Int
+  product_id: Int
+  regular_price: Int
+  sale_price: Int
+  unit: AssignUnitInput
+  unit_id: Int
+  variant_id: Int
+}
+
+input UpdateFileUploadInput {
+  name: String
+  owner_by: Int
+  size: Int
+  status: EFileStatus = ACTIVATED
+  type: EFileType
+  url: String
+}
+
+input UpdateOrderInput {
+  code: String
+  customer_id: Int
+  discount: Int = 0
+  final_cost: Int = 0
+  note: String
+  order_details: [CreateOrderDetailInput!]
+  payment_status: EPaymentStatus = UNPAID
+  service_fee: Int = 0
+  shipping_status: EShippingStatus = NOT_REQUIRED
+  status: EOrderStatus = PENDING
+  tax: Int = 0
+  total_cost: Int = 0
+}
+
+input UpdateProductAttributeInput {
+  name: String
+  values: [AssignProductAttributeValueInput!]
+}
+
+input UpdateProductAttributeValueInput {
+  attribute_id: Int
+  value: String
+}
+
+input UpdateProductInput {
+  attachments: [AssignFileUploadInput!]
+  attributes: [AssignProductAttributeInput!]
+  base_unit: AssignConversionUnitInput
+  categories: [AssignCategoryInput!]
+  code: String
+  conversion_units: [AssignConversionUnitInput!]
+  description: String
+  features: [String!]
+  gallery_images: [AssignFileUploadInput!]
+  name: String
+  short_description: String
+  sku: String
+  status: EProductStatus = ACTIVATED
+  thumbnail: AssignFileUploadInput
+  turnaround: String
+  type: EProductType = PRODUCT
+  values: [AssignProductAttributeValueInput!]
+  variants: [AssignProductVariantInput!]
+}
+
+input UpdateProductReviewInput {
+  attachment_ids: [Int!]
+  content: String
+  customer_id: Int
+  product_id: Int
+  rate: Int
+}
+
+input UpdateRoleInput {
+  description: String
+  name: String
+  permissions: [AssignPermissionInput!]
+}
+
+input UpdateUnitInput {
+  description: String
+  name: String
+}
+
+input UpdateUserInput {
+  address: String
+  avatar: AssignFileUploadInput
+  birthday: String
+  confirm_password: String
+  email: String
+  first_name: String
+  last_name: String
+  new_password: String
+  password: String
+  phone: String
+  roles: [AssignRoleInput!]
+}
+
+"""user"""
+type User {
+  address: String
+  avatar: FileUpload
+  avatar_id: Int
+  birthday: String
+  code: String!
+  created_at: DateTime
+  created_by: Int
+  creator: User
+  deleted_at: DateTime
+  deleted_by: Int
+  email: String
+  first_name: String
+  id: Int!
+  is_deleted: Boolean
+  last_name: String!
+  phone: String!
+  role_ids: [Int!]
+  roles: [Role!]
+  updated_at: DateTime
+  updated_by: Int
+  updater: User
+}

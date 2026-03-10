@@ -1,0 +1,12 @@
+export enum EBookingType {
+  SERVICE = 'SERVICE',
+  PRODUCT = 'PRODUCT',
+}
+
+export enum EBookingStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED',
+  RESCHEDULED = 'RESCHEDULED',
+}
