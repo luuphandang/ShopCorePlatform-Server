@@ -35,5 +35,6 @@ declare global {
   interface IConfig {
     getString(key: keyof EnvironmentVariables): string;
     getNumber(key: keyof EnvironmentVariables): number;
+    getOptionalString(key: keyof EnvironmentVariables): string | undefined;
   }
 }

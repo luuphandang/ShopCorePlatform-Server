@@ -19,8 +19,8 @@ export class RefreshTokenMiddleware extends AbstractBase implements NestMiddlewa
 
   async use(req: Request, res: Response, next: NextFunction) {
     try {
-      const { [ECookieType.ACCESS_TOKEN]: accessToken, [ECookieType.REFRESH_TOKEN]: refreshToken } =
-        req.cookies || {};
+      const accessToken = this.authService.extractAccessToken(req);
+      const refreshToken = this.authService.extractRefreshToken(req);
 
       try {
         if (!accessToken && !refreshToken) {

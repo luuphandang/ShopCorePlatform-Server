@@ -6,7 +6,6 @@ import { Strategy } from 'passport-jwt';
 
 import { CustomUnauthorizedError } from '@/common/exceptions/unauthorize.exception';
 import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { ECookieType } from '@/common/enums/auth.enum';
 import { User } from '@/modules/users/entities/user.entity';
 
 import { AuthService } from '../auth.service';
@@ -19,7 +18,7 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   ) {
     super({
       jwtFromRequest: (req: Request) => {
-        const token = req?.cookies?.[ECookieType.ACCESS_TOKEN];
+        const token = authService.extractAccessToken(req);
         if (!token) throw new CustomUnauthorizedError('Access token not found');
 
         return token;
@@ -30,7 +29,7 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(req: Request): Promise<User> {
-    const accessToken = req?.cookies?.[ECookieType.ACCESS_TOKEN];
+    const accessToken = this.authService.extractAccessToken(req);
     if (!accessToken) throw new CustomUnauthorizedError('Access token not found');
 
     const user = await this.authService.validateAccessToken(accessToken);

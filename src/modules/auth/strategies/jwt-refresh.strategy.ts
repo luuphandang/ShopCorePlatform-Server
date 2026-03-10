@@ -19,7 +19,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-ref
   ) {
     super({
       jwtFromRequest: (req: Request) => {
-        const token = req?.cookies?.[ECookieType.REFRESH_TOKEN];
+        const token = authService.extractRefreshToken(req);
         if (!token) throw new CustomUnauthorizedError('Refresh token not found');
 
         return token;
@@ -31,7 +31,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-ref
 
   async validate(req: Request, res: Response): Promise<User> {
     try {
-      const refreshToken = req?.cookies?.[ECookieType.REFRESH_TOKEN];
+      const refreshToken = this.authService.extractRefreshToken(req);
       if (!refreshToken) throw new CustomUnauthorizedError('Refresh token not found');
 
       const user = await this.authService.validateRefreshToken(refreshToken);

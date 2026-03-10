@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { CookieOptions, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 
 import { AbstractBase } from '@/common/abstracts/base.abstract';
 import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
@@ -11,7 +11,7 @@ import {
   ACCESS_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_EXPIRES_IN,
 } from '@/common/constants/auth.constant';
-import { ECookieType } from '@/common/enums/auth.enum';
+import { ECookieType, ETokenHeader } from '@/common/enums/auth.enum';
 
 import { User } from '../users/entities/user.entity';
 import { UserService } from '../users/user.service';
@@ -63,7 +63,7 @@ export class AuthService extends AbstractBase {
       this.getCookieOptions(ECookieType.REFRESH_TOKEN),
     );
 
-    return { access_token: accessToken, user, options: this.accessTokenCookieOptions };
+    return { access_token: accessToken, refresh_token: refreshToken, user, options: this.accessTokenCookieOptions };
   }
 
   public async signOut(userId: number, res: Response): Promise<void> {
@@ -159,8 +159,25 @@ export class AuthService extends AbstractBase {
     });
   }
 
+  public extractAccessToken(req: Request): string | null {
+    const authHeader = req.headers?.[ETokenHeader.AUTHORIZATION] as string;
+    if (authHeader?.startsWith(ETokenHeader.BEARER_PREFIX)) {
+      return authHeader.substring(ETokenHeader.BEARER_PREFIX.length);
+    }
+
+    return req?.cookies?.[ECookieType.ACCESS_TOKEN] || null;
+  }
+
+  public extractRefreshToken(req: Request): string | null {
+    const refreshHeader = req.headers?.[ETokenHeader.REFRESH_TOKEN] as string;
+    if (refreshHeader) return refreshHeader;
+
+    return req?.cookies?.[ECookieType.REFRESH_TOKEN] || null;
+  }
+
   private getCookieOptions(type: ECookieType): CookieOptions {
     const isProduction = this.config.getString('NODE_ENV') === 'production';
+    const cookieDomain = this.config.getOptionalString('COOKIE_DOMAIN');
     const expiresIn = {
       [ECookieType.ACCESS_TOKEN]: ACCESS_TOKEN_EXPIRES_IN,
       [ECookieType.REFRESH_TOKEN]: REFRESH_TOKEN_EXPIRES_IN,
@@ -172,7 +189,7 @@ export class AuthService extends AbstractBase {
       sameSite: isProduction ? 'strict' : 'lax',
       path: '/',
       maxAge: expiresIn[type] * 1000,
-      domain: isProduction ? '.photocopy99.com' : undefined,
+      domain: cookieDomain,
     };
   }
 }

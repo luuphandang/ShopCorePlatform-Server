@@ -126,6 +126,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  COOKIE_DOMAIN?: string;
+
+  @IsString()
+  @IsOptional()
   REDIS_HOST?: string;
 
   @IsNumber()

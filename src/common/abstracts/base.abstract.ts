@@ -14,9 +14,13 @@ export abstract class AbstractBase {
   protected get config(): IConfig {
     return {
       getString: (key: keyof EnvironmentVariables) =>
-        String(this._coreContext.configService.get<string>(key)),
-      getNumber: (key: keyof EnvironmentVariables) =>
-        Number(this._coreContext.configService.get<number>(key)),
+        this._coreContext.configService.get<string>(key) ?? '',
+      getNumber: (key: keyof EnvironmentVariables) => {
+        const value = this._coreContext.configService.get<number>(key);
+        return value != null && !isNaN(Number(value)) ? Number(value) : 0;
+      },
+      getOptionalString: (key: keyof EnvironmentVariables) =>
+        this._coreContext.configService.get<string>(key) ?? undefined,
     };
   }
 

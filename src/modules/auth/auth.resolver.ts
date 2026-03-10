@@ -1,9 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import { AbstractBase } from '@/common/abstracts/base.abstract';
 import { CoreContext } from '@/common/contexts';
+import { Req } from '@/common/decorators/request.decorator';
 import { Res } from '@/common/decorators/response.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { RefreshGuard } from '@/common/guards/refresh.guard';
@@ -49,12 +50,17 @@ export class AuthResolver extends AbstractBase {
 
   @Mutation(() => JwtWithUser)
   @UseGuards(RefreshGuard)
-  async refreshToken(@CurrentUser() user: User, @Res() res: Response): Promise<JwtWithUser> {
+  async refreshToken(
+    @CurrentUser() user: User,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<JwtWithUser> {
     const accessToken = this.authService.generateAccessToken(user);
+    const refreshToken = this.authService.extractRefreshToken(req);
     const cookieOptions = this.authService.accessTokenCookieOptions;
 
     res.cookie(ECookieType.ACCESS_TOKEN, accessToken, cookieOptions);
 
-    return { access_token: accessToken, user, options: cookieOptions };
+    return { access_token: accessToken, refresh_token: refreshToken, user, options: cookieOptions };
   }
 }
