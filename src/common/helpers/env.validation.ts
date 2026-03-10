@@ -122,6 +122,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  JWT_REFRESH_PUBLIC_KEY: string;
+
+  @IsString()
+  @IsNotEmpty()
   JWT_REFRESH_PRIVATE_KEY: string;
 
   @IsString()
@@ -150,6 +154,10 @@ export class EnvironmentVariables {
   @IsString()
   @IsOptional()
   REDIS_KEY_PREFIX?: string;
+
+  @IsString()
+  @IsOptional()
+  LOG_LEVEL?: string;
 }
 
 export function envValidation(config: Record<string, unknown>): EnvironmentVariables {

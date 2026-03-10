@@ -15,6 +15,9 @@ async function bootstrap(): Promise<void> {
 
   const coreContext = app.get(CoreContext);
   const logger = app.get(AppLogger);
+  const interceptor = new HandleRequestInterceptor(coreContext);
+  const filter = new AppExceptionFilter(coreContext);
+  const pipe = new ValidationPipe();
 
   app.useLogger(logger);
 
@@ -22,11 +25,11 @@ async function bootstrap(): Promise<void> {
 
   app.use(cookieParser());
 
-  app.useGlobalInterceptors(new HandleRequestInterceptor(coreContext));
+  app.useGlobalInterceptors(interceptor);
 
-  app.useGlobalFilters(new AppExceptionFilter(coreContext));
+  app.useGlobalFilters(filter);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(pipe);
 
   app.enableCors({
     origin:

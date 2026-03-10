@@ -155,7 +155,7 @@ export class AuthService extends AbstractBase {
       secret:
         type === ECookieType.ACCESS_TOKEN
           ? this.config.getString('JWT_ACCESS_PUBLIC_KEY')
-          : this.config.getString('JWT_REFRESH_PRIVATE_KEY'),
+          : this.config.getString('JWT_REFRESH_PUBLIC_KEY'),
     });
   }
 

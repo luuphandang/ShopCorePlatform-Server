@@ -33,7 +33,7 @@ export abstract class AbstractBase {
       debug: (message: string, context?: string) =>
         this._coreContext.appLogger.debug(message, context || this.CLASS_NAME),
 
-      error: (message: string, context?: string) =>
+      error: (message: string | Error, context?: string) =>
         this._coreContext.appLogger.error(message, context || this.CLASS_NAME),
 
       log: (message: string, context?: string) =>

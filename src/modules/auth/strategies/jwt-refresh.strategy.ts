@@ -24,7 +24,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-ref
 
         return token;
       },
-      secretOrKey: configService.get('JWT_REFRESH_PRIVATE_KEY'),
+      secretOrKey: configService.get('JWT_REFRESH_PUBLIC_KEY'),
       passReqToCallback: true,
     });
   }
