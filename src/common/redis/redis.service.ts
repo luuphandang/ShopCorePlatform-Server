@@ -1,12 +1,9 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
 import { AbstractBase } from '../abstracts/base.abstract';
+import { CoreContext } from '../contexts';
 import { getRedisKeyPrefix, getRedisTTL } from '../configs/redis.config';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
-import { UtilService } from '../utils/util.service';
 
 @Injectable()
 export class RedisService extends AbstractBase implements OnModuleDestroy {
@@ -14,15 +11,12 @@ export class RedisService extends AbstractBase implements OnModuleDestroy {
   private readonly defaultTTL: number;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     @Inject('REDIS_CLIENT') private readonly redis: Redis,
   ) {
-    super(configService, utilService, appLogger);
-    this.keyPrefix = getRedisKeyPrefix(configService);
-    this.defaultTTL = getRedisTTL(configService);
+    super(coreContext);
+    this.keyPrefix = getRedisKeyPrefix(coreContext.configService);
+    this.defaultTTL = getRedisTTL(coreContext.configService);
   }
 
   async onModuleDestroy() {

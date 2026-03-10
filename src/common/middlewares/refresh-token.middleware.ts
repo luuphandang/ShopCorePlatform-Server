@@ -1,26 +1,20 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { NextFunction, Request, Response } from 'express';
 
 import { AuthService } from '@/modules/auth/auth.service';
 
 import { AbstractBase } from '../abstracts/base.abstract';
+import { CoreContext } from '../contexts';
 import { CustomUnauthorizedError } from '../exceptions/unauthorize.exception';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
 import { ECookieType, EJwtErrorType } from '../enums/auth.enum';
-import { UtilService } from '../utils/util.service';
 
 @Injectable()
 export class RefreshTokenMiddleware extends AbstractBase implements NestMiddleware {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly authService: AuthService,
   ) {
-    super(configService, utilService, appLogger);
+    super(coreContext);
   }
 
   async use(req: Request, res: Response, next: NextFunction) {

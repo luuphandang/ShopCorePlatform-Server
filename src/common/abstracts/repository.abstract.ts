@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   Between,
   DataSource,
@@ -22,12 +21,10 @@ import {
   Repository,
 } from 'typeorm';
 
+import { RepositoryContext } from '../contexts/repository.context';
 import { IPagination } from '../graphql/query.input';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
 import { EPaginationType } from '../enums/common.enum';
 import { IWhere } from '../types/where.type';
-import { UtilService } from '../utils/util.service';
 import { AbstractBase } from './base.abstract';
 import { AbstractEntity } from './entity.abstract';
 
@@ -96,14 +93,10 @@ const operatorMap = new Map<string, (val: unknown) => unknown>([
 @Injectable()
 export abstract class AbstractRepository<T extends AbstractEntity> extends AbstractBase {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
-    private readonly _dataSource: DataSource,
+    private readonly _repoContext: RepositoryContext,
     private readonly _repository: Repository<T>,
   ) {
-    super(configService, utilService, appLogger);
+    super(_repoContext.core);
   }
 
   public async getOne(
@@ -330,7 +323,7 @@ export abstract class AbstractRepository<T extends AbstractEntity> extends Abstr
   // Protected methods
 
   protected get dataSource(): DataSource {
-    return this._dataSource;
+    return this._repoContext.dataSource;
   }
 
   protected get repository(): Repository<T> {

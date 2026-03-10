@@ -1,21 +1,18 @@
 import { OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ModuleRef } from '@nestjs/core';
 import { DeepPartial, FindOptionsWhere } from 'typeorm';
 
 import { User } from '@/modules/users/entities/user.entity';
 
+import { ServiceContext } from '../contexts/service.context';
 import { CustomNotFoundError } from '../exceptions/not-found.exception';
 import { MetadataResponse } from '../graphql/metadata.response';
 import { IPagination } from '../graphql/query.input';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { RedisService } from '../redis/redis.service';
 import { ACTIONS, RABBITMQ_EVENTS } from '../constants/event.constant';
 import { EPaginationType } from '../enums/common.enum';
 import { IRepoQueryMany, IRepoQueryOne } from '../interfaces/repository-query.interface';
-import { UtilService } from '../utils/util.service';
 import { AbstractBase } from './base.abstract';
 import { AbstractEntity } from './entity.abstract';
 import { AbstractRepository } from './repository.abstract';
@@ -32,17 +29,10 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
   implements OnModuleInit
 {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
-    private readonly _rabbitMQService: RabbitMQService,
-    private readonly _redisService: RedisService,
-    private _moduleRef: ModuleRef,
-
+    private readonly _serviceContext: ServiceContext,
     private readonly _repository: R,
   ) {
-    super(configService, utilService, appLogger);
+    super(_serviceContext.core);
   }
 
   public onModuleInit() {
@@ -312,7 +302,7 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
   protected abstract initializeDependencies(): void;
 
   protected get moduleRef(): ModuleRef {
-    return this._moduleRef;
+    return this._serviceContext.moduleRef;
   }
 
   protected get rabbitMQ() {
@@ -328,7 +318,7 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
       set: this.setRedis.bind(this),
       invalidate: this.invalidateRedis.bind(this),
       invalidateByPattern: this.invalidateRedisByPattern.bind(this),
-    }
+    };
   }
 
   protected get metadata() {
@@ -366,11 +356,11 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
   }
 
   private get rabbitMQService(): RabbitMQService {
-    return this._rabbitMQService;
+    return this._serviceContext.rabbitMQService;
   }
 
   private get redisService(): RedisService {
-    return this._redisService;
+    return this._serviceContext.redisService;
   }
 
   private responseMetadata(
@@ -441,7 +431,7 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
       const entity = this.util.getEntity(this.className);
       const routingKey = RABBITMQ_EVENTS.request[entity]?.[action];
 
-      const result = await this.rabbitMQService.request<IRabitMQResponse<T>>(
+      const result = await this.rabbitMQService.request<IRabbitMQResponse<T>>(
         entity,
         routingKey,
         data,
@@ -482,7 +472,6 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
   }
 
   private async invalidateRedis(key: string): Promise<boolean> {
-
     try {
       const result = await this.redisService.del(key);
       if (!result) return false;
@@ -495,7 +484,6 @@ export abstract class AbstractService<T extends AbstractEntity, R extends Abstra
   }
 
   private async invalidateRedisByPattern(pattern: string): Promise<boolean> {
-
     try {
       const result = await this.redisService.delByPattern(pattern);
       if (!result) return false;

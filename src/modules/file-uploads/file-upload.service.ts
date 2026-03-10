@@ -1,36 +1,24 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 import { DeepPartial } from 'typeorm';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
+import { ServiceContext } from '@/common/contexts';
 import { EFileClient, EFileStatus, EFileType } from '@/common/enums/file-upload.enum';
-import { UtilService } from '@/common/utils/util.service';
 
 import { FileUpload } from './entities/file-upload.entity';
 import { FileUploadRepository } from './file-upload.repository';
 import { CreateFileUploadInput } from './inputs/create-file-upload.input';
 import { AdminSignedUrlInput, SignedUrlInput, SignedUrlResponse } from './inputs/signed-url.input';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class FileUploadService extends AbstractService<FileUpload, FileUploadRepository> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly fileUploadRepository: FileUploadRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, fileUploadRepository);
+    super(serviceContext, fileUploadRepository);
   }
 
   protected initializeDependencies() {}

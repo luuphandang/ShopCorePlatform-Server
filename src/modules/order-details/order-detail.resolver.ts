@@ -1,10 +1,7 @@
-import { ConfigService } from '@nestjs/config';
 import { Context, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { UtilService } from '@/common/utils/util.service';
+import { CoreContext } from '@/common/contexts';
 
 import { ConversionUnit } from '../conversion-units/entities/conversion-unit.entity';
 import { OrderShipping } from '../order-shippings/entities/order-shipping.entity';
@@ -17,13 +14,10 @@ import { OrderDetailService } from './order-detail.service';
 @Resolver(() => OrderDetail)
 export class OrderDetailResolver extends AbstractResolver<OrderDetailService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly orderDetailService: OrderDetailService,
   ) {
-    super(configService, utilService, appLogger, orderDetailService);
+    super(coreContext, orderDetailService);
   }
 
   // Resolve fields

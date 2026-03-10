@@ -1,5 +1,4 @@
 import { UseInterceptors } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   Args,
   Context,
@@ -12,15 +11,13 @@ import {
 } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
+import { CoreContext } from '@/common/contexts';
 import { UseAuthGuard } from '@/common/decorators/auth-guard.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
-import { AppLogger } from '@/common/logger/logger.service';
 import { PERMISSIONS } from '@/common/constants/permission.constant';
-import { UtilService } from '@/common/utils/util.service';
 
 import { User } from '../users/entities/user.entity';
 import {
@@ -34,13 +31,10 @@ import { ProductAttributeValueService } from './product-attribute-value.service'
 @Resolver(() => ProductAttributeValue)
 export class ProductAttributeValueResolver extends AbstractResolver<ProductAttributeValueService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly productAttributeValueService: ProductAttributeValueService,
   ) {
-    super(configService, utilService, appLogger, productAttributeValueService);
+    super(coreContext, productAttributeValueService);
   }
 
   @Query(() => ProductAttributeValue, { nullable: true })

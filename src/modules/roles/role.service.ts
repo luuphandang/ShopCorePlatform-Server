@@ -1,36 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
-import { UtilService } from '@/common/utils/util.service';
+import { ServiceContext } from '@/common/contexts';
 
 import { PermissionService } from '../permissions/permission.service';
 import { Role } from './entities/role.entity';
 import { CreateRoleInput } from './inputs/create-role.input';
 import { UpdateRoleInput } from './inputs/update-role.input';
 import { RoleRepository } from './role.repository';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class RoleService extends AbstractService<Role, RoleRepository> {
   private permissionService: PermissionService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly roleRepository: RoleRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, roleRepository);
+    super(serviceContext, roleRepository);
   }
   protected initializeDependencies() {
     this.permissionService = this.moduleRef.get(PermissionService, { strict: false });

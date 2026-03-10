@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ModuleRef } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
@@ -7,14 +6,12 @@ import { CookieOptions, Response } from 'express';
 
 import { AbstractBase } from '@/common/abstracts/base.abstract';
 import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
+import { CoreContext } from '@/common/contexts';
 import {
   ACCESS_TOKEN_EXPIRES_IN,
   REFRESH_TOKEN_EXPIRES_IN,
 } from '@/common/constants/auth.constant';
 import { ECookieType } from '@/common/enums/auth.enum';
-import { UtilService } from '@/common/utils/util.service';
 
 import { User } from '../users/entities/user.entity';
 import { UserService } from '../users/user.service';
@@ -27,14 +24,11 @@ export class AuthService extends AbstractBase {
   private userService: UserService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly jwtService: JwtService,
     moduleRef: ModuleRef,
   ) {
-    super(configService, utilService, appLogger);
+    super(coreContext);
     this.moduleRef = moduleRef;
   }
 

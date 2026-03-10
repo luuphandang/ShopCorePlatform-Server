@@ -9,6 +9,7 @@ import { DataSource } from 'typeorm';
 import { graphqlConfig } from './common/configs/graphql.config';
 import { rabbitmqConfig } from './common/configs/rabbitmq.config';
 import { typeOrmConfig } from './common/configs/typeorm.config';
+import { ContextModule } from './common/contexts/context.module';
 import { DataloaderModule } from './common/dataloader/dataloader.module';
 import { DataloaderService } from './common/dataloader/dataloader.service';
 import { getEnvPath } from './common/helpers/env.helper';
@@ -74,6 +75,7 @@ import { UserModule } from './modules/users/user.module';
         typeOrmConfig(configService),
     }),
     LoggerModule,
+    ContextModule,
     AuthModule,
     AddressModule,
     AppointmentModule,

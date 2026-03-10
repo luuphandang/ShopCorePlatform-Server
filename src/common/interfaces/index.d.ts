@@ -13,7 +13,7 @@ declare global {
     data?: T;
   }
 
-  interface IRabitMQResponse<T> {
+  interface IRabbitMQResponse<T> {
     success: boolean;
     message: string;
     data?: T;

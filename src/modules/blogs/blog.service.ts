@@ -1,36 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
-import { UtilService } from '@/common/utils/util.service';
+import { ServiceContext } from '@/common/contexts';
 
 import { CategoryService } from '../categories/category.service';
 import { BlogRepository } from './blog.repository';
 import { Blog } from './entities/blog.entity';
 import { CreateBlogInput } from './inputs/create-blog.input';
 import { UpdateBlogInput } from './inputs/update-blog.input';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class BlogService extends AbstractService<Blog, BlogRepository> {
   private categoryService: CategoryService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly blogRepository: BlogRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, blogRepository);
+    super(serviceContext, blogRepository);
   }
 
   protected initializeDependencies() {

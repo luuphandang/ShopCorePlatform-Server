@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
-import { UtilService } from '@/common/utils/util.service';
+import { ServiceContext } from '@/common/contexts';
 
 import { AuthService } from '../auth/auth.service';
 import { RoleService } from '../roles/role.service';
@@ -16,7 +11,6 @@ import { User } from './entities/user.entity';
 import { CreateUserInput } from './inputs/create-user.input';
 import { UpdateUserInput } from './inputs/update-user.input';
 import { UserRepository } from './user.repository';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class UserService extends AbstractService<User, UserRepository> {
@@ -24,16 +18,10 @@ export class UserService extends AbstractService<User, UserRepository> {
   private authService: AuthService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly userRepository: UserRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, userRepository);
+    super(serviceContext, userRepository);
   }
 
   protected initializeDependencies() {

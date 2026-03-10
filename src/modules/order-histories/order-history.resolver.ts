@@ -1,10 +1,7 @@
-import { ConfigService } from '@nestjs/config';
 import { Context, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { UtilService } from '@/common/utils/util.service';
+import { CoreContext } from '@/common/contexts';
 
 import { User } from '../users/entities/user.entity';
 import { OrderHistory } from './entities/order-history.entity';
@@ -12,13 +9,10 @@ import { OrderHistoryService } from './order-history.service';
 @Resolver(() => OrderHistory)
 export class OrderHistoryResolver extends AbstractResolver<OrderHistoryService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly orderHistoryService: OrderHistoryService,
   ) {
-    super(configService, utilService, appLogger, orderHistoryService);
+    super(coreContext, orderHistoryService);
   }
 
   // Resolve fields

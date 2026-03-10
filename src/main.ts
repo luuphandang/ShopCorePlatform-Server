@@ -1,22 +1,19 @@
 import { ValidationPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
+import { CoreContext } from './common/contexts';
 import { AppExceptionFilter } from './common/filters/app-exception.filter';
-import { EnvironmentVariables } from './common/helpers/env.validation';
 import { HandleRequestInterceptor } from './common/interceptors/logging.interceptor';
 import { AppLogger } from './common/logger/logger.service';
-import { UtilService } from './common/utils/util.service';
 
 async function bootstrap(): Promise<void> {
   const PORT = process.env.PORT ?? 3670;
 
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
-  const configService = app.get(ConfigService<EnvironmentVariables>);
-  const utilService = app.get(UtilService);
+  const coreContext = app.get(CoreContext);
   const logger = app.get(AppLogger);
 
   app.useLogger(logger);
@@ -25,9 +22,9 @@ async function bootstrap(): Promise<void> {
 
   app.use(cookieParser());
 
-  app.useGlobalInterceptors(new HandleRequestInterceptor(configService, utilService, logger));
+  app.useGlobalInterceptors(new HandleRequestInterceptor(coreContext));
 
-  app.useGlobalFilters(new AppExceptionFilter(configService, utilService, logger));
+  app.useGlobalFilters(new AppExceptionFilter(coreContext));
 
   app.useGlobalPipes(new ValidationPipe());
 

@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
-import { UtilService } from '@/common/utils/util.service';
+import { ServiceContext } from '@/common/contexts';
 
 import { FileUploadService } from '../file-uploads/file-upload.service';
 import { ProductAttributeService } from '../product-attributes/product-attribute.service';
@@ -15,7 +10,6 @@ import { ProductVariant } from './entities/product-variant.entity';
 import { CreateProductVariantInput } from './inputs/create-product-variant.input';
 import { UpdateProductVariantInput } from './inputs/update-product-variant.input';
 import { ProductVariantRepository } from './product-variant.repository';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class ProductVariantService extends AbstractService<
@@ -26,24 +20,10 @@ export class ProductVariantService extends AbstractService<
   private fileUploadService: FileUploadService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly productVariantRepository: ProductVariantRepository,
   ) {
-    super(
-      configService,
-      utilService,
-      appLogger,
-      rabbitMQService,
-      redisService,
-      moduleRef,
-      productVariantRepository,
-    );
+    super(serviceContext, productVariantRepository);
   }
 
   protected initializeDependencies() {

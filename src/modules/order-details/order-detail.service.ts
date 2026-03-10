@@ -1,15 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 import { DeepPartial } from 'typeorm';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
+import { ServiceContext } from '@/common/contexts';
 import { EOrderStatus, EPaymentStatus, EShippingStatus } from '@/common/enums/order.enum';
-import { UtilService } from '@/common/utils/util.service';
 
 import { ConversionUnitService } from '../conversion-units/conversion-unit.service';
 import { ConversionUnit } from '../conversion-units/entities/conversion-unit.entity';
@@ -19,7 +14,6 @@ import { OrderDetail } from './entities/order-detail.entity';
 import { CreateOrderDetailInput } from './inputs/create-order-detail.input';
 import { UpdateOrderDetailInput } from './inputs/update-order-detail.input';
 import { OrderDetailRepository } from './order-detail.repository';
-import { RedisService } from '@/common/redis/redis.service';
 
 export interface IOrderDetailServiceOptions extends IServiceOptions<OrderDetail> {
   order?: Order;
@@ -31,16 +25,10 @@ export class OrderDetailService extends AbstractService<OrderDetail, OrderDetail
   private conversionUnitService: ConversionUnitService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly orderDetailRepository: OrderDetailRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, orderDetailRepository);
+    super(serviceContext, orderDetailRepository);
   }
 
   protected initializeDependencies() {

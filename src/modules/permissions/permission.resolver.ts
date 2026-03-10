@@ -1,16 +1,13 @@
 import { UseInterceptors } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
+import { CoreContext } from '@/common/contexts';
 import { UseAuthGuard } from '@/common/decorators/auth-guard.decorator';
 import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
-import { AppLogger } from '@/common/logger/logger.service';
 import { PERMISSIONS } from '@/common/constants/permission.constant';
-import { UtilService } from '@/common/utils/util.service';
 
 import { GetPermissionType, Permission } from './entities/permission.entity';
 import { PermissionService } from './permission.service';
@@ -18,13 +15,10 @@ import { PermissionService } from './permission.service';
 @Resolver(() => Permission)
 export class PermissionResolver extends AbstractResolver<PermissionService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly permissionService: PermissionService,
   ) {
-    super(configService, utilService, appLogger, permissionService);
+    super(coreContext, permissionService);
   }
 
   @Query(() => GetPermissionType)

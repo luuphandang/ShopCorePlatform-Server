@@ -1,31 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
+import { ServiceContext } from '@/common/contexts';
 import { EBookingStatus } from '@/common/enums/booking.enum';
-import { UtilService } from '@/common/utils/util.service';
 
 import { BookingRepository } from './booking.repository';
 import { Booking } from './entities/booking.entity';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class BookingService extends AbstractService<Booking, BookingRepository> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly bookingRepository: BookingRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, bookingRepository);
+    super(serviceContext, bookingRepository);
   }
 
   protected initializeDependencies() {}

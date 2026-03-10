@@ -1,14 +1,9 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
+import { ServiceContext } from '@/common/contexts';
 import { EOrderStatus, EShippingStatus } from '@/common/enums/order.enum';
-import { UtilService } from '@/common/utils/util.service';
 
 import { AddressService } from '../addresses/address.service';
 import { Address } from '../addresses/entities/address.entity';
@@ -29,7 +24,6 @@ import { Order } from './entities/order.entity';
 import { CreateOrderInput } from './inputs/create-order.input';
 import { UpdateOrderInput } from './inputs/update-order.input';
 import { OrderRepository } from './order.repository';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class OrderService extends AbstractService<Order, OrderRepository> implements OnModuleInit {
@@ -39,16 +33,10 @@ export class OrderService extends AbstractService<Order, OrderRepository> implem
   protected addressService: AddressService;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     private readonly orderRepository: OrderRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, orderRepository);
+    super(serviceContext, orderRepository);
   }
 
   protected initializeDependencies() {

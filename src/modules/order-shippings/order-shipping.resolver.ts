@@ -1,14 +1,11 @@
 import { UseInterceptors } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Args, Context, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
+import { CoreContext } from '@/common/contexts';
 import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
-import { AppLogger } from '@/common/logger/logger.service';
-import { UtilService } from '@/common/utils/util.service';
 
 import { User } from '../users/entities/user.entity';
 import { GetOrderShippingType, OrderShipping } from './entities/order-shipping.entity';
@@ -17,13 +14,10 @@ import { OrderShippingService } from './order-shipping.service';
 @Resolver(() => OrderShipping)
 export class OrderShippingResolver extends AbstractResolver<OrderShippingService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly orderShippingService: OrderShippingService,
   ) {
-    super(configService, utilService, appLogger, orderShippingService);
+    super(coreContext, orderShippingService);
   }
 
   @Query(() => OrderShipping, { nullable: true })

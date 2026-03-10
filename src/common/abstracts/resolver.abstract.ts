@@ -1,19 +1,12 @@
-import { ConfigService } from '@nestjs/config';
-
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
-import { UtilService } from '../utils/util.service';
+import { CoreContext } from '../contexts/core.context';
 import { AbstractBase } from './base.abstract';
 
 export abstract class AbstractResolver<S> extends AbstractBase {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly _service: S,
   ) {
-    super(configService, utilService, appLogger);
+    super(coreContext);
   }
 
   protected get service(): S {

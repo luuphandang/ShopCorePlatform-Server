@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 
 import { IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
 import { CustomUnknownError } from '@/common/exceptions/unknown.exception';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { RabbitMQService } from '@/common/rabbitmq/rabbitmq.service';
+import { ServiceContext } from '@/common/contexts';
 import { CODE_PREFIX } from '@/common/constants/code-prefix.constant';
 import { EOrderStatus, EShippingStatus } from '@/common/enums/order.enum';
-import { UtilService } from '@/common/utils/util.service';
 
 import { Order } from '../orders/entities/order.entity';
 import { CreateOrderInput } from '../orders/inputs/create-order.input';
@@ -20,21 +15,14 @@ import { IGetCartInput } from '../orders/interfaces/cart.interface';
 import { OrderRepository } from '../orders/order.repository';
 import { OrderService } from '../orders/order.service';
 import { AddToCartInput, CheckoutCartInput, RemoveFromCartInput } from './inputs/handle-cart.input';
-import { RedisService } from '@/common/redis/redis.service';
 
 @Injectable()
 export class CartService extends OrderService {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-    rabbitMQService: RabbitMQService,
-    redisService: RedisService,
-    moduleRef: ModuleRef,
-
+    serviceContext: ServiceContext,
     orderRepository: OrderRepository,
   ) {
-    super(configService, utilService, appLogger, rabbitMQService, redisService, moduleRef, orderRepository);
+    super(serviceContext, orderRepository);
   }
 
   // Cart methods

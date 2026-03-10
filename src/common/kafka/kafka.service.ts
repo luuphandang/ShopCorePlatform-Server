@@ -1,23 +1,17 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ClientKafka } from '@nestjs/microservices';
 
 import { AbstractBase } from '../abstracts/base.abstract';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
+import { CoreContext } from '../contexts';
 import { EVENT_TOPICS } from '../constants/event.constant';
-import { UtilService } from '../utils/util.service';
 
 @Injectable()
 export class KafkaService extends AbstractBase implements OnModuleInit {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     @Inject('KAFKA_CLIENT') private readonly client: ClientKafka,
   ) {
-    super(configService, utilService, appLogger);
+    super(coreContext);
   }
 
   public async onModuleInit() {

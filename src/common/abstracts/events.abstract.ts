@@ -1,21 +1,11 @@
-import { ConfigService } from '@nestjs/config';
-
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
+import { EventContext } from '../contexts/event.context';
 import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { RABBITMQ_EVENTS } from '../constants/event.constant';
-import { UtilService } from '../utils/util.service';
 import { AbstractBase } from './base.abstract';
 
 export abstract class AbstractEvents extends AbstractBase {
-  constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
-    private readonly _rabbitMQService: RabbitMQService,
-  ) {
-    super(configService, utilService, appLogger);
+  constructor(private readonly _eventContext: EventContext) {
+    super(_eventContext.core);
   }
 
   // Protected methods
@@ -30,7 +20,7 @@ export abstract class AbstractEvents extends AbstractBase {
   // Private methods
 
   private get rabbitMQService(): RabbitMQService {
-    return this._rabbitMQService;
+    return this._eventContext.rabbitMQService;
   }
 
   private async publishRabbitMQEvent(
@@ -59,7 +49,7 @@ export abstract class AbstractEvents extends AbstractBase {
       const entity = this.util.getEntity(this.className);
       const routingKey = RABBITMQ_EVENTS.request[entity]?.[action];
 
-      const result = await this.rabbitMQService.request<IRabitMQResponse<T>>(
+      const result = await this.rabbitMQService.request<IRabbitMQResponse<T>>(
         entity,
         routingKey,
         data,

@@ -1,14 +1,11 @@
 import { UseInterceptors } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
+import { CoreContext } from '@/common/contexts';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { GetOneInput } from '@/common/graphql/query.input';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
-import { AppLogger } from '@/common/logger/logger.service';
-import { UtilService } from '@/common/utils/util.service';
 
 import { OrderDetail } from '../order-details/entities/order-detail.entity';
 import { OrderHistory } from '../order-histories/entities/order-history.entity';
@@ -22,13 +19,10 @@ import { AddToCartInput, CheckoutCartInput, RemoveFromCartInput } from './inputs
 @Resolver(() => Order)
 export class CartResolver extends AbstractResolver<CartService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly cartService: CartService,
   ) {
-    super(configService, utilService, appLogger, cartService);
+    super(coreContext, cartService);
   }
 
   // Cart

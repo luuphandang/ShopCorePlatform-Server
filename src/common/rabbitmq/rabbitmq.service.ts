@@ -1,12 +1,9 @@
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ChannelModel, ConfirmChannel, connect, ConsumeMessage } from 'amqplib';
 import { firstValueFrom, map, Observable, take, timeout as rxTimeout } from 'rxjs';
 
 import { AbstractBase } from '../abstracts/base.abstract';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
-import { UtilService } from '../utils/util.service';
+import { CoreContext } from '../contexts';
 import { RabbitMQModuleOptions } from './rabbitmq.module';
 
 @Injectable()
@@ -17,13 +14,10 @@ export class RabbitMQService extends AbstractBase implements OnModuleInit, OnMod
   private readyPromise: Promise<void>;
 
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     @Inject('RABBITMQ_CONFIG') rabbitConfig: RabbitMQModuleOptions,
   ) {
-    super(configService, utilService, appLogger);
+    super(coreContext);
 
     this.rabbitConfig = rabbitConfig;
     this.readyPromise = this.initialize();

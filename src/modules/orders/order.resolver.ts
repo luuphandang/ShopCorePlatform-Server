@@ -1,5 +1,4 @@
 import { UseInterceptors } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   Args,
   Context,
@@ -12,15 +11,13 @@ import {
 } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
+import { CoreContext } from '@/common/contexts';
 import { UseAuthGuard } from '@/common/decorators/auth-guard.decorator';
 import { CurrentUser } from '@/common/decorators/user.decorator';
 import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
-import { AppLogger } from '@/common/logger/logger.service';
 import { PERMISSIONS } from '@/common/constants/permission.constant';
-import { UtilService } from '@/common/utils/util.service';
 
 import { OrderDetail } from '../order-details/entities/order-detail.entity';
 import { OrderHistory } from '../order-histories/entities/order-history.entity';
@@ -33,13 +30,10 @@ import { OrderService } from './order.service';
 @Resolver(() => Order)
 export class OrderResolver extends AbstractResolver<OrderService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly orderService: OrderService,
   ) {
-    super(configService, utilService, appLogger, orderService);
+    super(coreContext, orderService);
   }
 
   @Query(() => Order, { nullable: true })

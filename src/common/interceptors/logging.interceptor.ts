@@ -1,21 +1,14 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { AbstractBase } from '../abstracts/base.abstract';
-import { EnvironmentVariables } from '../helpers/env.validation';
-import { AppLogger } from '../logger/logger.service';
-import { UtilService } from '../utils/util.service';
+import { CoreContext } from '../contexts';
 
 @Injectable()
 export class HandleRequestInterceptor extends AbstractBase implements NestInterceptor {
-  constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-  ) {
-    super(configService, utilService, appLogger);
+  constructor(coreContext: CoreContext) {
+    super(coreContext);
   }
 
   public intercept(context: ExecutionContext, next: CallHandler<unknown>): Observable<unknown> {

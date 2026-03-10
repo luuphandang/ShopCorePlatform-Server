@@ -1,10 +1,7 @@
-import { ConfigService } from '@nestjs/config';
 import { Context, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { AbstractResolver } from '@/common/abstracts/resolver.abstract';
-import { EnvironmentVariables } from '@/common/helpers/env.validation';
-import { AppLogger } from '@/common/logger/logger.service';
-import { UtilService } from '@/common/utils/util.service';
+import { CoreContext } from '@/common/contexts';
 
 import { ConversionUnit } from '../conversion-units/entities/conversion-unit.entity';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
@@ -17,13 +14,10 @@ import { ProductVariantService } from './product-variant.service';
 @Resolver(() => ProductVariant)
 export class ProductVariantResolver extends AbstractResolver<ProductVariantService> {
   constructor(
-    configService: ConfigService<EnvironmentVariables>,
-    utilService: UtilService,
-    appLogger: AppLogger,
-
+    coreContext: CoreContext,
     private readonly productVariantService: ProductVariantService,
   ) {
-    super(configService, utilService, appLogger, productVariantService);
+    super(coreContext, productVariantService);
   }
 
   @ResolveField(() => [FileUpload], { nullable: true })
