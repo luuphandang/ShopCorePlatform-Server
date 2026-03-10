@@ -158,6 +158,12 @@ export class EnvironmentVariables {
   @IsString()
   @IsOptional()
   LOG_LEVEL?: string;
+
+  @IsNumber()
+  @Min(1)
+  @Max(31)
+  @IsOptional()
+  BCRYPT_HASH_ROUNDS?: number;
 }
 
 export function envValidation(config: Record<string, unknown>): EnvironmentVariables {

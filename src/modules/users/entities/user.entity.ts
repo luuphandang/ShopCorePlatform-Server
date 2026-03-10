@@ -16,7 +16,7 @@ import { MetadataResponse } from '@/common/graphql/metadata.response';
 import { ProductReview } from '@/modules/product-reviews/entities/product-review.entity';
 import { Role } from '@/modules/roles/entities/role.entity';
 
-const BCRYPT_HASH_ROUNDS = 10;
+const BCRYPT_HASH_ROUNDS = Number(process.env.BCRYPT_HASH_ROUNDS) || 10;
 
 @ObjectType({ description: 'user' })
 @Entity({ name: 'users' })
