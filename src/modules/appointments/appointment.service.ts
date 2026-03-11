@@ -1,14 +1,37 @@
 import { Injectable } from '@nestjs/common';
 
-import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
+import {
+  AbstractStatusService,
+  IStatusChangeOptions,
+  IStatusTransitionMap,
+} from '@/common/abstracts/status-service.abstract';
 import { ServiceContext } from '@/common/contexts';
 import { EAppointmentStatus } from '@/common/enums/appointment.enum';
 
 import { AppointmentRepository } from './appointment.repository';
 import { Appointment } from './entities/appointment.entity';
 
+const APPOINTMENT_TRANSITIONS: IStatusTransitionMap<EAppointmentStatus> = {
+  [EAppointmentStatus.PENDING]: [EAppointmentStatus.CONFIRMED, EAppointmentStatus.CANCELLED],
+  [EAppointmentStatus.CONFIRMED]: [
+    EAppointmentStatus.COMPLETED,
+    EAppointmentStatus.CANCELLED,
+    EAppointmentStatus.RESCHEDULED,
+  ],
+  [EAppointmentStatus.RESCHEDULED]: [
+    EAppointmentStatus.CONFIRMED,
+    EAppointmentStatus.CANCELLED,
+  ],
+};
+
 @Injectable()
-export class AppointmentService extends AbstractService<Appointment, AppointmentRepository> {
+export class AppointmentService extends AbstractStatusService<
+  Appointment,
+  AppointmentRepository,
+  EAppointmentStatus
+> {
+  protected readonly statusTransitions = APPOINTMENT_TRANSITIONS;
+
   constructor(
     serviceContext: ServiceContext,
     private readonly appointmentRepository: AppointmentRepository,
@@ -20,39 +43,29 @@ export class AppointmentService extends AbstractService<Appointment, Appointment
 
   public async pendingAppointment(
     id: number,
-    options?: IServiceOptions<Appointment>,
+    options?: IStatusChangeOptions<Appointment>,
   ): Promise<Appointment | null> {
-    return this.changeAppointmentStatus(id, EAppointmentStatus.PENDING, options);
+    return this.changeStatus(id, EAppointmentStatus.PENDING, options);
   }
 
   public async confirmedAppointment(
     id: number,
-    options?: IServiceOptions<Appointment>,
+    options?: IStatusChangeOptions<Appointment>,
   ): Promise<Appointment | null> {
-    return this.changeAppointmentStatus(id, EAppointmentStatus.CONFIRMED, options);
+    return this.changeStatus(id, EAppointmentStatus.CONFIRMED, options);
   }
 
   public async completedAppointment(
     id: number,
-    options?: IServiceOptions<Appointment>,
+    options?: IStatusChangeOptions<Appointment>,
   ): Promise<Appointment | null> {
-    return this.changeAppointmentStatus(id, EAppointmentStatus.COMPLETED, options);
+    return this.changeStatus(id, EAppointmentStatus.COMPLETED, options);
   }
 
   public async cancelledAppointment(
     id: number,
-    options?: IServiceOptions<Appointment>,
+    options?: IStatusChangeOptions<Appointment>,
   ): Promise<Appointment | null> {
-    return this.changeAppointmentStatus(id, EAppointmentStatus.CANCELLED, options);
-  }
-
-  // Protected methods
-
-  protected async changeAppointmentStatus(
-    id: number,
-    status: EAppointmentStatus,
-    options?: IServiceOptions<Appointment>,
-  ) {
-    return this.update(id, { status }, options);
+    return this.changeStatus(id, EAppointmentStatus.CANCELLED, options);
   }
 }

@@ -1,7 +1,13 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 
-import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
+import {
+  AbstractStatusService,
+  IStatusChangeOptions,
+  IStatusTransitionMap,
+} from '@/common/abstracts/status-service.abstract';
+import { IServiceOptions } from '@/common/abstracts/service.abstract';
 import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
+import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
 import { ServiceContext } from '@/common/contexts';
 import { EOrderStatus, EShippingStatus } from '@/common/enums/order.enum';
 
@@ -25,8 +31,32 @@ import { CreateOrderInput } from './inputs/create-order.input';
 import { UpdateOrderInput } from './inputs/update-order.input';
 import { OrderRepository } from './order.repository';
 
+const ORDER_TRANSITIONS: IStatusTransitionMap<EOrderStatus> = {
+  [EOrderStatus.CART]: [EOrderStatus.PENDING],
+  [EOrderStatus.PENDING]: [EOrderStatus.CONFIRMED, EOrderStatus.CANCELLED],
+  [EOrderStatus.CONFIRMED]: [EOrderStatus.PROCESSING, EOrderStatus.CANCELLED],
+  [EOrderStatus.PROCESSING]: [EOrderStatus.SHIPPED, EOrderStatus.ON_HOLD, EOrderStatus.CANCELLED],
+  [EOrderStatus.ON_HOLD]: [EOrderStatus.PROCESSING, EOrderStatus.CANCELLED],
+  [EOrderStatus.SHIPPED]: [EOrderStatus.COMPLETED],
+  [EOrderStatus.COMPLETED]: [EOrderStatus.REFUNDED],
+};
+
+const SHIPPING_TRANSITIONS: IStatusTransitionMap<EShippingStatus> = {
+  [EShippingStatus.NOT_REQUIRED]: [EShippingStatus.PENDING],
+  [EShippingStatus.PENDING]: [EShippingStatus.CONFIRMED],
+  [EShippingStatus.CONFIRMED]: [EShippingStatus.SHIPPED],
+  [EShippingStatus.SHIPPED]: [EShippingStatus.IN_TRANSIT, EShippingStatus.RETURNED],
+  [EShippingStatus.IN_TRANSIT]: [EShippingStatus.DELIVERED, EShippingStatus.RETURNED, EShippingStatus.LOST],
+  [EShippingStatus.DELIVERED]: [EShippingStatus.RETURNED],
+};
+
 @Injectable()
-export class OrderService extends AbstractService<Order, OrderRepository> implements OnModuleInit {
+export class OrderService
+  extends AbstractStatusService<Order, OrderRepository, EOrderStatus>
+  implements OnModuleInit
+{
+  protected readonly statusTransitions = ORDER_TRANSITIONS;
+
   protected orderDetailService: OrderDetailService;
   protected orderShippingService: OrderShippingService;
   protected orderHistoryService: OrderHistoryService;
@@ -94,49 +124,131 @@ export class OrderService extends AbstractService<Order, OrderRepository> implem
     }
   }
 
-  async peddingOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderStatus(id, EOrderStatus.PENDING, options);
+  async peddingOrder(id: number, options: IStatusChangeOptions<Order> = {}): Promise<Order | null> {
+    return await this.changeStatus(id, EOrderStatus.PENDING, options);
   }
 
-  async confirmedOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderStatus(id, EOrderStatus.CONFIRMED, options);
+  async confirmedOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeStatus(id, EOrderStatus.CONFIRMED, options);
   }
 
-  async processingOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderStatus(id, EOrderStatus.PROCESSING, options);
+  async processingOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeStatus(id, EOrderStatus.PROCESSING, options);
   }
 
-  async shippedOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    await this.changeOrderStatus(id, EOrderStatus.SHIPPED, options);
-
-    return await this.changeOrderShippingStatus(id, EShippingStatus.SHIPPED, options);
+  async shippedOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    await this.changeStatus(id, EOrderStatus.SHIPPED, options);
+    return await this.changeShippingStatus(id, EShippingStatus.SHIPPED, options);
   }
 
-  async inTransitOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderShippingStatus(id, EShippingStatus.IN_TRANSIT, options);
+  async inTransitOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeShippingStatus(id, EShippingStatus.IN_TRANSIT, options);
   }
 
-  async deliveredOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderShippingStatus(id, EShippingStatus.DELIVERED, options);
+  async deliveredOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeShippingStatus(id, EShippingStatus.DELIVERED, options);
   }
 
-  async returnedOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderShippingStatus(id, EShippingStatus.RETURNED, options);
+  async returnedOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeShippingStatus(id, EShippingStatus.RETURNED, options);
   }
 
-  async completedOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderStatus(id, EOrderStatus.COMPLETED, options);
+  async completedOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeStatus(id, EOrderStatus.COMPLETED, options);
   }
 
-  async refundedOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderStatus(id, EOrderStatus.REFUNDED, options);
+  async refundedOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeStatus(id, EOrderStatus.REFUNDED, options);
   }
 
-  async cancelledOrder(id: number, options: IServiceOptions<Order> = {}): Promise<Order | null> {
-    return await this.changeOrderStatus(id, EOrderStatus.CANCELLED, options);
+  async cancelledOrder(
+    id: number,
+    options: IStatusChangeOptions<Order> = {},
+  ): Promise<Order | null> {
+    return await this.changeStatus(id, EOrderStatus.CANCELLED, options);
   }
 
-  // Private method
+  // Hooks
+
+  protected async afterStatusChange(
+    model: Order,
+    _currentStatus: EOrderStatus,
+    newStatus: EOrderStatus,
+    options: IStatusChangeOptions<Order>,
+  ): Promise<void> {
+    if (newStatus !== EOrderStatus.SHIPPED) {
+      await this.createOrderHistory(
+        { order_id: model.id, status: newStatus },
+        { performedBy: options.performedBy },
+      );
+    }
+  }
+
+  // Private methods
+
+  protected async changeShippingStatus(
+    id: number,
+    newStatus: EShippingStatus,
+    options: IServiceOptions<Order> = {},
+  ): Promise<Order | null> {
+    try {
+      if (!options.model) {
+        options.model = await this.getOne({ where: { id } as any });
+      }
+
+      const currentShippingStatus = options.model.shipping_status as EShippingStatus;
+      this.validateShippingTransition(currentShippingStatus, newStatus);
+
+      const result = await this.update(id, { shipping_status: newStatus } as any, options);
+      if (!result) throw new Error('Cập nhật trạng thái vận chuyển đơn hàng không thành công.');
+
+      await this.createOrderHistory(
+        { order_id: id, shipping_status: newStatus },
+        { performedBy: options.performedBy },
+      );
+
+      return result;
+    } catch (error) {
+      this.logger.error(error, `${this.className}:changeShippingStatus`);
+      throw error;
+    }
+  }
+
+  protected validateShippingTransition(
+    currentStatus: EShippingStatus,
+    newStatus: EShippingStatus,
+  ): void {
+    const allowed = SHIPPING_TRANSITIONS[currentStatus];
+    if (!allowed || !allowed.includes(newStatus)) {
+      throw new CustomBadRequestError(
+        `Không thể chuyển trạng thái vận chuyển từ "${currentStatus}" sang "${newStatus}".`,
+      );
+    }
+  }
 
   protected async summaryOrder(order: Order) {
     const orderDetails =
@@ -242,50 +354,6 @@ export class OrderService extends AbstractService<Order, OrderRepository> implem
       return await this.addressService.create(data, options);
     } catch (error) {
       this.logger.error(`[${this.className}:createAddress]: ${error}`);
-      throw error;
-    }
-  }
-
-  protected async changeOrderStatus(
-    id: number,
-    status: EOrderStatus,
-    options: IServiceOptions<Order> = {},
-  ): Promise<Order | null> {
-    try {
-      const result = await this.update(id, { status }, options);
-      if (!result) throw new Error('Cập nhật trạng thái đơn hàng không thành công.');
-
-      if (status !== EOrderStatus.SHIPPED) {
-        await this.createOrderHistory(
-          { order_id: id, status },
-          { performedBy: options.performedBy },
-        );
-      }
-
-      return result;
-    } catch (error) {
-      this.logger.error(error, `${this.className}:changeOrderStatus`);
-      throw error;
-    }
-  }
-
-  protected async changeOrderShippingStatus(
-    id: number,
-    status: EShippingStatus,
-    options: IServiceOptions<Order> = {},
-  ): Promise<Order | null> {
-    try {
-      const result = await this.update(id, { shipping_status: status }, options);
-      if (!result) throw new Error('Cập nhật trạng thái vận chuyển đơn hàng không thành công.');
-
-      await this.createOrderHistory(
-        { order_id: id, shipping_status: status },
-        { performedBy: options.performedBy },
-      );
-
-      return result;
-    } catch (error) {
-      this.logger.error(error, `${this.className}:changeOrderShippingStatus`);
       throw error;
     }
   }

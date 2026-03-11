@@ -18,6 +18,8 @@ import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
 import { PERMISSIONS } from '@/common/constants/permission.constant';
+import { ValidateStatusTransition } from '@/common/decorators/validate-status-transition.decorator';
+import { EOrderStatus } from '@/common/enums/order.enum';
 
 import { OrderDetail } from '../order-details/entities/order-detail.entity';
 import { OrderHistory } from '../order-histories/entities/order-history.entity';
@@ -133,6 +135,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.CONFIRMED)
   async confirmedOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -142,6 +145,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.PROCESSING)
   async processingOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -151,6 +155,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.SHIPPED)
   async shippedOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -160,6 +165,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.SHIPPED, 'shipping_status')
   async inTransitOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -169,6 +175,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.SHIPPED, 'shipping_status')
   async returnedOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -178,6 +185,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.COMPLETED)
   async completedOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -187,6 +195,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.REFUNDED)
   async refundedOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -196,6 +205,7 @@ export class OrderResolver extends AbstractResolver<OrderService> {
 
   @Mutation(() => Order, { nullable: true })
   @UseAuthGuard([PERMISSIONS.SET_ORDER_STATUS])
+  @ValidateStatusTransition(EOrderStatus.CANCELLED)
   async cancelledOrder(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,

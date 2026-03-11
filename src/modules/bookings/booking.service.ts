@@ -1,14 +1,37 @@
 import { Injectable } from '@nestjs/common';
 
-import { AbstractService, IServiceOptions } from '@/common/abstracts/service.abstract';
+import {
+  AbstractStatusService,
+  IStatusChangeOptions,
+  IStatusTransitionMap,
+} from '@/common/abstracts/status-service.abstract';
 import { ServiceContext } from '@/common/contexts';
 import { EBookingStatus } from '@/common/enums/booking.enum';
 
 import { BookingRepository } from './booking.repository';
 import { Booking } from './entities/booking.entity';
 
+const BOOKING_TRANSITIONS: IStatusTransitionMap<EBookingStatus> = {
+  [EBookingStatus.PENDING]: [EBookingStatus.CONFIRMED, EBookingStatus.CANCELLED],
+  [EBookingStatus.CONFIRMED]: [
+    EBookingStatus.COMPLETED,
+    EBookingStatus.CANCELLED,
+    EBookingStatus.RESCHEDULED,
+  ],
+  [EBookingStatus.RESCHEDULED]: [
+    EBookingStatus.CONFIRMED,
+    EBookingStatus.CANCELLED,
+  ],
+};
+
 @Injectable()
-export class BookingService extends AbstractService<Booking, BookingRepository> {
+export class BookingService extends AbstractStatusService<
+  Booking,
+  BookingRepository,
+  EBookingStatus
+> {
+  protected readonly statusTransitions = BOOKING_TRANSITIONS;
+
   constructor(
     serviceContext: ServiceContext,
     private readonly bookingRepository: BookingRepository,
@@ -20,39 +43,29 @@ export class BookingService extends AbstractService<Booking, BookingRepository> 
 
   public async pendingBooking(
     id: number,
-    options?: IServiceOptions<Booking>,
+    options?: IStatusChangeOptions<Booking>,
   ): Promise<Booking | null> {
-    return this.changeBookingStatus(id, EBookingStatus.PENDING, options);
+    return this.changeStatus(id, EBookingStatus.PENDING, options);
   }
 
   public async confirmedBooking(
     id: number,
-    options?: IServiceOptions<Booking>,
+    options?: IStatusChangeOptions<Booking>,
   ): Promise<Booking | null> {
-    return this.changeBookingStatus(id, EBookingStatus.CONFIRMED, options);
+    return this.changeStatus(id, EBookingStatus.CONFIRMED, options);
   }
 
   public async completedBooking(
     id: number,
-    options?: IServiceOptions<Booking>,
+    options?: IStatusChangeOptions<Booking>,
   ): Promise<Booking | null> {
-    return this.changeBookingStatus(id, EBookingStatus.COMPLETED, options);
+    return this.changeStatus(id, EBookingStatus.COMPLETED, options);
   }
 
   public async cancelledBooking(
     id: number,
-    options?: IServiceOptions<Booking>,
+    options?: IStatusChangeOptions<Booking>,
   ): Promise<Booking | null> {
-    return this.changeBookingStatus(id, EBookingStatus.CANCELLED, options);
-  }
-
-  // Protected methods
-
-  protected async changeBookingStatus(
-    id: number,
-    status: EBookingStatus,
-    options?: IServiceOptions<Booking>,
-  ) {
-    return this.update(id, { status }, options);
+    return this.changeStatus(id, EBookingStatus.CANCELLED, options);
   }
 }

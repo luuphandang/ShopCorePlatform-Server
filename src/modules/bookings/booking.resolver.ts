@@ -18,6 +18,8 @@ import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
 import { PERMISSIONS } from '@/common/constants/permission.constant';
+import { ValidateStatusTransition } from '@/common/decorators/validate-status-transition.decorator';
+import { EBookingStatus } from '@/common/enums/booking.enum';
 
 import { Category } from '../categories/entities/category.entity';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
@@ -104,6 +106,7 @@ export class BookingResolver extends AbstractResolver<BookingService> {
   }
 
   @Mutation(() => Booking)
+  @ValidateStatusTransition(EBookingStatus.PENDING)
   async pendingBooking(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -112,6 +115,7 @@ export class BookingResolver extends AbstractResolver<BookingService> {
   }
 
   @Mutation(() => Booking)
+  @ValidateStatusTransition(EBookingStatus.CONFIRMED)
   async confirmedBooking(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -120,6 +124,7 @@ export class BookingResolver extends AbstractResolver<BookingService> {
   }
 
   @Mutation(() => Booking)
+  @ValidateStatusTransition(EBookingStatus.COMPLETED)
   async completedBooking(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -128,6 +133,7 @@ export class BookingResolver extends AbstractResolver<BookingService> {
   }
 
   @Mutation(() => Booking)
+  @ValidateStatusTransition(EBookingStatus.CANCELLED)
   async cancelledBooking(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,

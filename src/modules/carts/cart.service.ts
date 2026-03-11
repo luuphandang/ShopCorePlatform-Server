@@ -242,7 +242,7 @@ export class CartService extends OrderService {
           { performedBy, model: cart },
         );
 
-        await this.changeOrderStatus(cart.id, EOrderStatus.PENDING, { performedBy });
+        await this.changeStatus(cart.id, EOrderStatus.PENDING, { performedBy, skipValidation: true });
 
         return await this.refreshOrder(cart.id, { performedBy });
       });

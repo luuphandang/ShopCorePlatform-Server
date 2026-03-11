@@ -18,6 +18,8 @@ import { GetManyInput, GetOneInput } from '@/common/graphql/query.input';
 import { QueryManyInterceptor } from '@/common/interceptors/query-many.interceptor';
 import { QueryOneInterceptor } from '@/common/interceptors/query-one.interceptor';
 import { PERMISSIONS } from '@/common/constants/permission.constant';
+import { ValidateStatusTransition } from '@/common/decorators/validate-status-transition.decorator';
+import { EAppointmentStatus } from '@/common/enums/appointment.enum';
 
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
 import { User } from '../users/entities/user.entity';
@@ -104,6 +106,7 @@ export class AppointmentResolver extends AbstractResolver<AppointmentService> {
   }
 
   @Mutation(() => Appointment)
+  @ValidateStatusTransition(EAppointmentStatus.PENDING)
   async pendingAppointment(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -112,6 +115,7 @@ export class AppointmentResolver extends AbstractResolver<AppointmentService> {
   }
 
   @Mutation(() => Appointment)
+  @ValidateStatusTransition(EAppointmentStatus.CONFIRMED)
   async confirmedAppointment(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -120,6 +124,7 @@ export class AppointmentResolver extends AbstractResolver<AppointmentService> {
   }
 
   @Mutation(() => Appointment)
+  @ValidateStatusTransition(EAppointmentStatus.COMPLETED)
   async completedAppointment(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
@@ -128,6 +133,7 @@ export class AppointmentResolver extends AbstractResolver<AppointmentService> {
   }
 
   @Mutation(() => Appointment)
+  @ValidateStatusTransition(EAppointmentStatus.CANCELLED)
   async cancelledAppointment(
     @Args('id', { type: () => Int }) id: number,
     @CurrentUser() user: User,
