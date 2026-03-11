@@ -178,6 +178,16 @@ export class EnvironmentVariables {
   @Min(1)
   @IsOptional()
   THROTTLE_LIMIT?: number;
+
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  GRAPHQL_MAX_DEPTH?: number;
+
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  GRAPHQL_MAX_COMPLEXITY?: number;
 }
 
 export function envValidation(config: Record<string, unknown>): EnvironmentVariables {
