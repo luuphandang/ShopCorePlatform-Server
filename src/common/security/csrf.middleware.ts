@@ -4,18 +4,29 @@ import { NextFunction, Request, Response } from 'express';
 
 import { EnvironmentVariables } from '../helpers/env.validation';
 
-const CSRF_HEADER = 'x-csrf-protection';
-const CSRF_HEADER_VALUE = '1';
+import { CsrfService } from './csrf.service';
 
 @Injectable()
 export class CsrfMiddleware implements NestMiddleware {
   private readonly isPlaygroundEnabled: boolean;
 
-  constructor(configService: ConfigService<EnvironmentVariables>) {
+  constructor(
+    private readonly csrfService: CsrfService,
+    configService: ConfigService<EnvironmentVariables>,
+  ) {
     this.isPlaygroundEnabled = configService.get('GRAPHQL_PLAYGROUND') === 'true';
   }
 
-  use(req: Request, _res: Response, next: NextFunction) {
+  use(req: Request, res: Response, next: NextFunction) {
+    // For GET requests, set a CSRF token cookie if not present
+    if (req.method === 'GET') {
+      if (!req.cookies?.[CsrfService.cookieName]) {
+        const token = this.csrfService.generateToken();
+        this.csrfService.setTokenCookie(res, token);
+      }
+      return next();
+    }
+
     if (req.method !== 'POST') {
       return next();
     }
@@ -25,10 +36,11 @@ export class CsrfMiddleware implements NestMiddleware {
       return next();
     }
 
-    const csrfHeader = req.headers[CSRF_HEADER];
+    const cookieToken = req.cookies?.[CsrfService.cookieName];
+    const headerToken = req.headers[CsrfService.headerName] as string | undefined;
 
-    if (csrfHeader !== CSRF_HEADER_VALUE) {
-      throw new ForbiddenException('CSRF validation failed: missing or invalid x-csrf-protection header');
+    if (!this.csrfService.validateToken(cookieToken, headerToken)) {
+      throw new ForbiddenException('CSRF validation failed: missing or invalid CSRF token');
     }
 
     next();

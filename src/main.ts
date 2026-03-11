@@ -39,8 +39,8 @@ async function bootstrap(): Promise<void> {
     origin: corsOrigins,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-protection'],
-    exposedHeaders: ['X-Total-Count'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
+    exposedHeaders: ['X-Total-Count', 'Set-Cookie'],
   });
 
   await app.listen(PORT, () => {
