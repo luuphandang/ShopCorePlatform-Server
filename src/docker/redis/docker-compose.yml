@@ -4,11 +4,13 @@ services:
   redis:
     image: redis:7-alpine
     container_name: shopcore-redis
+    env_file:
+      - ../.env
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT:-6379}:6379'
     volumes:
       - redis-data:/data
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     restart: unless-stopped
     networks:
       - shopcore-network
