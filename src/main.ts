@@ -31,19 +31,15 @@ async function bootstrap(): Promise<void> {
 
   app.useGlobalPipes(pipe);
 
+  const corsOrigins = process.env.CROSS_ORIGIN
+    ? process.env.CROSS_ORIGIN.split(',').map((o) => o.trim())
+    : ['http://localhost:3671'];
+
   app.enableCors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? ['https://photocopy99.com', 'https://www.photocopy99.com']
-        : [
-            'http://localhost:3671',
-            'http://127.0.0.1:3671',
-            'http://localhost:3672',
-            'http://127.0.0.1:3672',
-          ],
+    origin: corsOrigins,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-protection'],
     exposedHeaders: ['X-Total-Count'],
   });
 

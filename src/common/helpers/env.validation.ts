@@ -28,6 +28,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  CROSS_ORIGIN: string;
+
+  @IsString()
+  @IsNotEmpty()
   KAFKA_BROKERS: string;
 
   @IsString()
