@@ -1,8 +1,9 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DiscoveryModule } from '@nestjs/core';
+import { APP_GUARD, DiscoveryModule } from '@nestjs/core';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -13,6 +14,7 @@ import { ContextModule } from './common/contexts/context.module';
 import { DataloaderModule } from './common/dataloader/dataloader.module';
 import { DataloaderService } from './common/dataloader/dataloader.service';
 import { getEnvPath } from './common/helpers/env.helper';
+import { GqlThrottlerGuard } from './common/guards/gql-throttler.guard';
 import { EnvironmentVariables, envValidation } from './common/helpers/env.validation';
 import { LoggerModule } from './common/logger/logger.module';
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware';
@@ -49,6 +51,18 @@ import { UserModule } from './modules/users/user.module';
       envFilePath: getEnvPath(`${__dirname}/..`),
       isGlobal: true,
       validate: envValidation,
+    }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<EnvironmentVariables>) => ({
+        throttlers: [
+          {
+            ttl: configService.get('THROTTLE_TTL', { infer: true }) ?? 60000,
+            limit: configService.get('THROTTLE_LIMIT', { infer: true }) ?? 60,
+          },
+        ],
+      }),
     }),
     DiscoveryModule,
     RabbitMQModule.registerAsync({
@@ -98,6 +112,12 @@ import { UserModule } from './modules/users/user.module';
     RoleModule,
     UnitModule,
     UserModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {

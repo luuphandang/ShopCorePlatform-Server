@@ -168,6 +168,16 @@ export class EnvironmentVariables {
   @Max(31)
   @IsOptional()
   BCRYPT_HASH_ROUNDS?: number;
+
+  @IsNumber()
+  @Min(1000)
+  @IsOptional()
+  THROTTLE_TTL?: number;
+
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  THROTTLE_LIMIT?: number;
 }
 
 export function envValidation(config: Record<string, unknown>): EnvironmentVariables {

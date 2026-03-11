@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Throttle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
 
 import { AbstractBase } from '@/common/abstracts/base.abstract';
@@ -25,11 +26,13 @@ export class AuthResolver extends AbstractBase {
     super(coreContext);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Mutation(() => JwtWithUser)
   async signUp(@Args('data') data: SignUpInput, @Res() res: Response): Promise<JwtWithUser> {
     return await this.authService.signUp(data, res);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Mutation(() => JwtWithUser)
   @UseGuards(SignInGuard)
   async signIn(
@@ -48,6 +51,7 @@ export class AuthResolver extends AbstractBase {
     return true;
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Mutation(() => JwtWithUser)
   @UseGuards(RefreshGuard)
   async refreshToken(
