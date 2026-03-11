@@ -25,7 +25,10 @@ export class CreateUserInput {
   @Field(() => String)
   @IsNotEmpty()
   @IsString({ message: 'Password must be a string!' })
-  @MinLength(4, { message: 'Password must be at least 4 characters long!' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long!' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
+    message: 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt',
+  })
   password: string;
 
   @Field(() => String, { nullable: true })
