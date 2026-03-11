@@ -1,6 +1,7 @@
 import { Field, InputType, Int, registerEnumType } from '@nestjs/graphql';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
+import { AllowHtml } from '@/common/decorators/allow-html.decorator';
 import { ECategoryType } from '@/common/enums/category.enum';
 import { AssignFileUploadInput } from '@/modules/file-uploads/inputs/create-file-upload.input';
 
@@ -26,11 +27,13 @@ export class CreateCategoryInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString({ message: 'Mô tả cần là chuỗi ký tự' })
+  @AllowHtml()
   short_description?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString({ message: 'Mô tả cần là chuỗi ký tự' })
+  @AllowHtml()
   description?: string;
 
   @Field(() => [String], { nullable: true })

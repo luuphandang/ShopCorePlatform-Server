@@ -1,6 +1,7 @@
 import { Field, InputType, Int, registerEnumType } from '@nestjs/graphql';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
+import { AllowHtml } from '@/common/decorators/allow-html.decorator';
 import { EProductStatus } from '@/common/enums/product.enum';
 import { AssignConversionUnitInput } from '@/modules/conversion-units/inputs/create-conversion-unit.input';
 import { AssignFileUploadInput } from '@/modules/file-uploads/inputs/create-file-upload.input';
@@ -37,6 +38,7 @@ export class CreateProductVariantInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
+  @AllowHtml()
   description?: string;
 
   @Field(() => [AssignFileUploadInput], { nullable: true })

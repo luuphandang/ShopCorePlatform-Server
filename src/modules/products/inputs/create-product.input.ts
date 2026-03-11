@@ -1,6 +1,7 @@
 import { Field, InputType, registerEnumType } from '@nestjs/graphql';
 import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
+import { AllowHtml } from '@/common/decorators/allow-html.decorator';
 import { EProductStatus, EProductType } from '@/common/enums/product.enum';
 import { AssignCategoryInput } from '@/modules/categories/inputs/create-category.input';
 import { AssignConversionUnitInput } from '@/modules/conversion-units/inputs/create-conversion-unit.input';
@@ -56,11 +57,13 @@ export class CreateProductInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
+  @AllowHtml()
   short_description?: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
+  @AllowHtml()
   description?: string;
 
   @Field(() => EProductStatus, { nullable: true, defaultValue: EProductStatus.ACTIVATED })
