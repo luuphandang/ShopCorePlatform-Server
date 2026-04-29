@@ -2,8 +2,8 @@ import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ChannelModel, ConfirmChannel, connect, ConsumeMessage } from 'amqplib';
 import { firstValueFrom, map, Observable, take, timeout as rxTimeout } from 'rxjs';
 
-import { rabbitmqMessagesTotal } from '@/modules/metrics/metrics.registry';
 import { getRequestContext } from '@/common/contexts/request.context';
+import { rabbitmqMessagesTotal } from '@/modules/metrics/metrics.registry';
 
 import { AbstractBase } from '../abstracts/base.abstract';
 import { MODULE_CONFIGS } from '../constants/module.constant';
@@ -99,23 +99,22 @@ export class RabbitMQService extends AbstractBase implements OnModuleInit, OnMod
     const exchangeOptions = this.rabbitConfig.exchangeOptions || { durable: true };
     await this.channel.assertExchange(exchange, type, exchangeOptions);
 
-    try {
-      const ok = this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)));
-      rabbitmqMessagesTotal.labels('publish', routingKey, ok ? 'success' : 'buffered').inc();
-      return ok;
-    } catch (error) {
-      rabbitmqMessagesTotal.labels('publish', routingKey, 'error').inc();
-      throw error;
-    }
     const ctx = getRequestContext();
     const headers: Record<string, string | undefined> = { ...(publishOptions.headers ?? {}) };
     if (ctx?.requestId && !headers['x-request-id']) {
       headers['x-request-id'] = ctx.requestId;
     }
 
-    return this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {
-      headers,
-    });
+    try {
+      const ok = this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {
+        headers,
+      });
+      rabbitmqMessagesTotal.labels('publish', routingKey, ok ? 'success' : 'buffered').inc();
+      return ok;
+    } catch (error) {
+      rabbitmqMessagesTotal.labels('publish', routingKey, 'error').inc();
+      throw error;
+    }
   }
 
   async request<T = unknown>(
