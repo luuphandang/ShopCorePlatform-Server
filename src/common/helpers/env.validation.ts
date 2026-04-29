@@ -32,10 +32,6 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
-  KAFKA_BROKERS: string;
-
-  @IsString()
-  @IsNotEmpty()
   RABBITMQ_URI: string;
 
   @IsString()

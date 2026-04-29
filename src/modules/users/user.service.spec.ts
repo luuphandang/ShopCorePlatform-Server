@@ -12,16 +12,11 @@ import { UserService } from './user.service';
 describe('UserService', () => {
   let service: UserService;
   let userRepository: jest.Mocked<UserRepository>;
-  let kafkaService: jest.Mocked<KafkaService>;
 
   beforeEach(async () => {
     const mockUserRepository = {
       create: jest.fn(),
       executeInTransaction: jest.fn(),
-    };
-
-    const mockKafkaService = {
-      publish: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -35,9 +30,7 @@ describe('UserService', () => {
         },
         {
           provide: UtilService,
-          useValue: {
-            kafkaTopic: jest.fn().mockReturnValue('test-topic'),
-          },
+          useValue: {},
         },
         {
           provide: AppLogger,
@@ -52,10 +45,6 @@ describe('UserService', () => {
         {
           provide: UserRepository,
           useValue: mockUserRepository,
-        },
-        {
-          provide: KafkaService,
-          useValue: mockKafkaService,
         },
         {
           provide: ModuleRef,
@@ -80,7 +69,6 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     userRepository = module.get(UserRepository);
-    kafkaService = module.get(KafkaService);
   });
 
   it('should be defined', () => {
@@ -115,7 +103,6 @@ describe('UserService', () => {
       expect(user).toBeDefined();
       expect(user.email).toBe('test@test.com');
       expect(userRepository.create).toHaveBeenCalled();
-      expect(kafkaService.publish).toHaveBeenCalled();
     });
 
     describe('create user failed', () => {

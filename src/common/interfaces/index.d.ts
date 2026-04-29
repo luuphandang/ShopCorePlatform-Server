@@ -7,12 +7,6 @@ declare global {
     loaders: IDataloader;
   }
 
-  interface IKafkaResponse<T> {
-    success: boolean;
-    message: string;
-    data?: T;
-  }
-
   interface IRabbitMQResponse<T> {
     success: boolean;
     message: string;
