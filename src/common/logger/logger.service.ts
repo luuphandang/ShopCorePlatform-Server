@@ -1,6 +1,16 @@
+import 'winston-daily-rotate-file';
+
 import { Injectable, LoggerService } from '@nestjs/common';
 import { createLogger, format, Logger, transports } from 'winston';
-import 'winston-daily-rotate-file';
+
+import { getRequestContext } from '@/common/contexts/request.context';
+
+const requestContextFormat = format((info) => {
+  const ctx = getRequestContext();
+  if (ctx?.requestId) info.requestId = ctx.requestId;
+  if (ctx?.userId !== undefined) info.userId = ctx.userId;
+  return info;
+});
 
 @Injectable()
 export class AppLogger implements LoggerService {
@@ -13,16 +23,19 @@ export class AppLogger implements LoggerService {
     const jsonFormat = format.combine(
       format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
       format.errors({ stack: true }),
+      requestContextFormat(),
       format.json(),
     );
 
     const prettyConsoleFormat = format.combine(
       format.timestamp({ format: 'HH:mm:ss.SSS' }),
       format.colorize({ all: true }),
-      format.printf(({ timestamp, level, message, context, stack }) => {
+      requestContextFormat(),
+      format.printf(({ timestamp, level, message, context, stack, requestId }) => {
         const ctx = context ? ` [${context}]` : '';
+        const reqId = requestId ? ` (${String(requestId).slice(0, 8)})` : '';
         const trace = stack ? `\n${stack}` : '';
-        return `${timestamp} ${level}${ctx}: ${message}${trace}`;
+        return `${timestamp} ${level}${ctx}${reqId}: ${message}${trace}`;
       }),
     );
 

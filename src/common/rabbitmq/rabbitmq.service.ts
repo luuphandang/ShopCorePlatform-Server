@@ -2,6 +2,8 @@ import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ChannelModel, ConfirmChannel, connect, ConsumeMessage } from 'amqplib';
 import { firstValueFrom, map, Observable, take, timeout as rxTimeout } from 'rxjs';
 
+import { getRequestContext } from '@/common/contexts/request.context';
+
 import { AbstractBase } from '../abstracts/base.abstract';
 import { MODULE_CONFIGS } from '../constants/module.constant';
 import { CoreContext } from '../contexts';
@@ -89,13 +91,22 @@ export class RabbitMQService extends AbstractBase implements OnModuleInit, OnMod
     routingKey: string,
     message: unknown,
     type: 'direct' | 'topic' | 'fanout' = 'direct',
+    publishOptions: { headers?: Record<string, string | undefined> } = {},
   ) {
     await this.waitForReady();
 
     const exchangeOptions = this.rabbitConfig.exchangeOptions || { durable: true };
     await this.channel.assertExchange(exchange, type, exchangeOptions);
 
-    return this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)));
+    const ctx = getRequestContext();
+    const headers: Record<string, string | undefined> = { ...(publishOptions.headers ?? {}) };
+    if (ctx?.requestId && !headers['x-request-id']) {
+      headers['x-request-id'] = ctx.requestId;
+    }
+
+    return this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)), {
+      headers,
+    });
   }
 
   async request<T = unknown>(

@@ -5,8 +5,9 @@ import { AuthService } from '@/modules/auth/auth.service';
 
 import { AbstractBase } from '../abstracts/base.abstract';
 import { CoreContext } from '../contexts';
-import { CustomUnauthorizedError } from '../exceptions/unauthorize.exception';
+import { setUserOnRequestContext } from '../contexts/request.context';
 import { ECookieType, EJwtErrorType } from '../enums/auth.enum';
+import { CustomUnauthorizedError } from '../exceptions/unauthorize.exception';
 
 @Injectable()
 export class RefreshTokenMiddleware extends AbstractBase implements NestMiddleware {
@@ -32,6 +33,7 @@ export class RefreshTokenMiddleware extends AbstractBase implements NestMiddlewa
           throw new CustomUnauthorizedError(EJwtErrorType.INVALID);
         }
 
+        setUserOnRequestContext(user.id);
         return next();
       } catch (error) {
         if (
@@ -46,6 +48,7 @@ export class RefreshTokenMiddleware extends AbstractBase implements NestMiddlewa
           const newAccessToken = this.authService.generateAccessToken(user);
           this.refreshCookie(req, res, newAccessToken);
 
+          setUserOnRequestContext(user.id);
           return next();
         }
 
