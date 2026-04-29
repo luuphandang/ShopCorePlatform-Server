@@ -3,11 +3,12 @@ import 'winston-daily-rotate-file';
 import { Injectable, LoggerService } from '@nestjs/common';
 import { createLogger, format, Logger, transports } from 'winston';
 
-import { ecsFormat } from './formats/ecs.format';
-import { piiMaskFormat } from './formats/pii-mask.format';
 import { getRequestContext } from '@/common/contexts/request.context';
 
-const requestContextFormat = format((info) => {
+import { ecsFormat } from './formats/ecs.format';
+import { piiMaskFormat } from './formats/pii-mask.format';
+
+export const requestContextFormat = format((info) => {
   const ctx = getRequestContext();
   if (ctx?.requestId) info.requestId = ctx.requestId;
   if (ctx?.userId !== undefined) info.userId = ctx.userId;
