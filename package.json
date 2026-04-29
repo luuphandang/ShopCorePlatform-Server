@@ -59,7 +59,6 @@
     "helmet": "^8.1.0",
     "install": "^0.13.0",
     "ioredis": "^5.3.2",
-    "kafkajs": "^2.2.4",
     "moment-timezone": "^0.5.48",
     "nanoid": "^5.1.5",
     "nest-winston": "^1.10.2",

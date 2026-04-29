@@ -110,7 +110,6 @@ revertMigration() {
 
 startDependencies() {
     docker compose -f "$CUR_DIR/database/docker-compose.yml" up -d
-    docker compose -f "$CUR_DIR/kafka/docker-compose.yml" up -d
 }
 
 # Main script logic
