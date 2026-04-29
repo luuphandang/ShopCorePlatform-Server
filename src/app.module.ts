@@ -16,6 +16,7 @@ import { DataloaderService } from './common/dataloader/dataloader.service';
 import { GqlThrottlerGuard } from './common/guards/gql-throttler.guard';
 import { getEnvPath } from './common/helpers/env.helper';
 import { EnvironmentVariables, envValidation } from './common/helpers/env.validation';
+import { LifecycleModule } from './common/lifecycle/lifecycle.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware';
 import { RequestIdMiddleware } from './common/middlewares/request-id.middleware';
@@ -91,6 +92,7 @@ import { UserModule } from './modules/users/user.module';
         typeOrmConfig(configService),
     }),
     LoggerModule,
+    LifecycleModule,
     ContextModule,
     AuthModule,
     AddressModule,
