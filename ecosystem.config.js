@@ -9,6 +9,7 @@ module.exports = {
       kill_timeout: 30000,
       wait_ready: true,
       listen_timeout: 10000,
+      shutdown_with_message: true,
       env: {
         NODE_ENV: 'production',
       },
