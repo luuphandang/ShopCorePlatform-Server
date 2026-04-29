@@ -3,9 +3,9 @@ import { ChannelModel, ConfirmChannel, connect, ConsumeMessage } from 'amqplib';
 import { firstValueFrom, map, Observable, take, timeout as rxTimeout } from 'rxjs';
 
 import { AbstractBase } from '../abstracts/base.abstract';
+import { MODULE_CONFIGS } from '../constants/module.constant';
 import { CoreContext } from '../contexts';
 import { RabbitMQModuleOptions } from './rabbitmq.module';
-import { MODULE_CONFIGS } from '../constants/module.constant';
 
 @Injectable()
 export class RabbitMQService extends AbstractBase implements OnModuleInit, OnModuleDestroy {
@@ -64,6 +64,24 @@ export class RabbitMQService extends AbstractBase implements OnModuleInit, OnMod
 
   async waitForReady(): Promise<void> {
     await this.readyPromise;
+  }
+
+  async isHealthy(timeoutMs = 3000): Promise<boolean> {
+    try {
+      await Promise.race([
+        this.waitForReady(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('rabbitmq ready timeout')), timeoutMs),
+        ),
+      ]);
+
+      if (!this.channel) return false;
+
+      await this.channel.checkExchange('amq.direct');
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async publish(
