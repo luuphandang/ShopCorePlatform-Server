@@ -15,6 +15,8 @@ async function bootstrap(): Promise<void> {
 
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
+  app.enableShutdownHooks();
+
   const coreContext = app.get(CoreContext);
   const logger = app.get(AppLogger);
   const interceptor = new HandleRequestInterceptor(coreContext);

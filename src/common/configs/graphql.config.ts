@@ -10,6 +10,7 @@ import { join } from 'path';
 import { DataloaderService } from '../dataloader/dataloader.service';
 import { ERROR_CODES } from '../exceptions/constant.exception';
 import { MetricsPlugin } from '../graphql/metrics.plugin';
+import { RequestIdPlugin } from '../graphql/request-id.plugin';
 import { EnvironmentVariables } from '../helpers/env.validation';
 import { SecurityHeadersPlugin } from '../security/security-headers.plugin';
 
@@ -64,7 +65,7 @@ export const graphqlConfig = async (
       req,
       res,
     }),
-    plugins: [SecurityHeadersPlugin, MetricsPlugin],
+    plugins: [SecurityHeadersPlugin, MetricsPlugin, RequestIdPlugin],
     formatError: (error: GraphQLError): IGraphQLFormattedError => {
       const extensions = error?.extensions;
       return {

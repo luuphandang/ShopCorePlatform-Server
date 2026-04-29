@@ -16,8 +16,10 @@ import { DataloaderService } from './common/dataloader/dataloader.service';
 import { GqlThrottlerGuard } from './common/guards/gql-throttler.guard';
 import { getEnvPath } from './common/helpers/env.helper';
 import { EnvironmentVariables, envValidation } from './common/helpers/env.validation';
+import { LifecycleModule } from './common/lifecycle/lifecycle.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware';
+import { RequestIdMiddleware } from './common/middlewares/request-id.middleware';
 import { RabbitMQModule } from './common/rabbitmq/rabbitmq.module';
 import { RedisModule } from './common/redis/redis.module';
 import { SecurityModule } from './common/security/security.module';
@@ -32,6 +34,7 @@ import { CategoryModule } from './modules/categories/category.module';
 import { ConversionUnitModule } from './modules/conversion-units/conversion-unit.module';
 import { FileUploadModule } from './modules/file-uploads/file-upload.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { HealthModule } from './modules/health/health.module';
 import { OrderDetailModule } from './modules/order-details/order-detail.module';
 import { OrderHistoryModule } from './modules/order-histories/order-history.module';
 import { OrderShippingModule } from './modules/order-shippings/order-shipping.module';
@@ -90,6 +93,7 @@ import { UserModule } from './modules/users/user.module';
         typeOrmConfig(configService),
     }),
     LoggerModule,
+    LifecycleModule,
     ContextModule,
     AuthModule,
     AddressModule,
@@ -101,6 +105,7 @@ import { UserModule } from './modules/users/user.module';
     ConversionUnitModule,
     FileUploadModule,
     MetricsModule,
+    HealthModule,
     OrderDetailModule,
     OrderHistoryModule,
     OrderShippingModule,
@@ -126,6 +131,7 @@ export class AppModule implements NestModule {
   constructor(private dataSource: DataSource) {}
 
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
     consumer.apply(RefreshTokenMiddleware).forRoutes('*');
   }
 }
