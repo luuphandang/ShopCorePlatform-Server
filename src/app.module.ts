@@ -13,11 +13,12 @@ import { typeOrmConfig } from './common/configs/typeorm.config';
 import { ContextModule } from './common/contexts/context.module';
 import { DataloaderModule } from './common/dataloader/dataloader.module';
 import { DataloaderService } from './common/dataloader/dataloader.service';
-import { getEnvPath } from './common/helpers/env.helper';
 import { GqlThrottlerGuard } from './common/guards/gql-throttler.guard';
+import { getEnvPath } from './common/helpers/env.helper';
 import { EnvironmentVariables, envValidation } from './common/helpers/env.validation';
 import { LoggerModule } from './common/logger/logger.module';
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware';
+import { RequestIdMiddleware } from './common/middlewares/request-id.middleware';
 import { RabbitMQModule } from './common/rabbitmq/rabbitmq.module';
 import { RedisModule } from './common/redis/redis.module';
 import { SecurityModule } from './common/security/security.module';
@@ -124,6 +125,7 @@ export class AppModule implements NestModule {
   constructor(private dataSource: DataSource) {}
 
   configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
     consumer.apply(RefreshTokenMiddleware).forRoutes('*');
   }
 }
