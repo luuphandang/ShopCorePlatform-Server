@@ -3,6 +3,8 @@ import 'winston-daily-rotate-file';
 import { Injectable, LoggerService } from '@nestjs/common';
 import { createLogger, format, Logger, transports } from 'winston';
 
+import { ecsFormat } from './formats/ecs.format';
+import { piiMaskFormat } from './formats/pii-mask.format';
 import { getRequestContext } from '@/common/contexts/request.context';
 
 const requestContextFormat = format((info) => {
@@ -20,9 +22,11 @@ export class AppLogger implements LoggerService {
     const isProduction = process.env.NODE_ENV === 'production';
     const logLevel = process.env.LOG_LEVEL ?? (isProduction ? 'warn' : 'debug');
 
-    const jsonFormat = format.combine(
-      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+    const productionJsonFormat = format.combine(
+      format.timestamp(),
       format.errors({ stack: true }),
+      piiMaskFormat(),
+      ecsFormat(),
       requestContextFormat(),
       format.json(),
     );
@@ -47,7 +51,7 @@ export class AppLogger implements LoggerService {
         maxSize: '10m',
         maxFiles: '30d',
         zippedArchive: true,
-        format: jsonFormat,
+        format: productionJsonFormat,
       }),
       new transports.DailyRotateFile({
         filename: 'logs/combined-%DATE%.log',
@@ -55,12 +59,12 @@ export class AppLogger implements LoggerService {
         maxSize: '20m',
         maxFiles: '14d',
         zippedArchive: true,
-        format: jsonFormat,
+        format: productionJsonFormat,
       }),
     ];
 
     const consoleTransport = new transports.Console({
-      format: isProduction ? jsonFormat : prettyConsoleFormat,
+      format: isProduction ? productionJsonFormat : prettyConsoleFormat,
     });
 
     this.logger = createLogger({
