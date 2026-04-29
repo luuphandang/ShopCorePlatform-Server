@@ -33,6 +33,7 @@ import { CartModule } from './modules/carts/cart.module';
 import { CategoryModule } from './modules/categories/category.module';
 import { ConversionUnitModule } from './modules/conversion-units/conversion-unit.module';
 import { FileUploadModule } from './modules/file-uploads/file-upload.module';
+import { MetricsModule } from './modules/metrics/metrics.module';
 import { HealthModule } from './modules/health/health.module';
 import { OrderDetailModule } from './modules/order-details/order-detail.module';
 import { OrderHistoryModule } from './modules/order-histories/order-history.module';
@@ -103,6 +104,7 @@ import { UserModule } from './modules/users/user.module';
     CategoryModule,
     ConversionUnitModule,
     FileUploadModule,
+    MetricsModule,
     HealthModule,
     OrderDetailModule,
     OrderHistoryModule,

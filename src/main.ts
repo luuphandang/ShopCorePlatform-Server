@@ -6,6 +6,7 @@ import { AppModule } from './app.module';
 import { CoreContext } from './common/contexts';
 import { AppExceptionFilter } from './common/filters/app-exception.filter';
 import { HandleRequestInterceptor } from './common/interceptors/logging.interceptor';
+import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
 import { SanitizeInterceptor } from './common/interceptors/sanitize.interceptor';
 import { AppLogger } from './common/logger/logger.service';
 
@@ -28,7 +29,7 @@ async function bootstrap(): Promise<void> {
 
   app.use(cookieParser());
 
-  app.useGlobalInterceptors(new SanitizeInterceptor(), interceptor);
+  app.useGlobalInterceptors(new SanitizeInterceptor(), interceptor, new MetricsInterceptor());
 
   app.useGlobalFilters(filter);
 
