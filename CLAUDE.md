@@ -35,21 +35,21 @@ Backend NestJS API for ShopCorePlatform. Listens on **port 3670** (GraphQL at `/
 
 ## Common commands
 
-| Command | Purpose |
-|---|---|
-| `npm run start:dev` | Watch mode (sets `NODE_ENV=development`) |
-| `npm run start:prod` | Run compiled `dist/main` |
-| `npm run start:production` | PM2 via `ecosystem.config.js` |
-| `npm test` | Jest unit |
-| `npm run test:cov` | Coverage |
-| `npm run test:e2e` | End-to-end (`test/jest-e2e.json`) |
-| `npm run lint` | ESLint --fix |
-| `npm run build` | Compile to `dist/` |
-| `bash server.sh database backup` | `pg_dump` (requires `PGPASSWORD`) |
-| `FILE_NAME=AddX npm run migration:create` | Create empty structure migration |
-| `FILE_NAME=AddX npm run migration:generate` | Auto-diff entity vs DB → migration |
-| `npm run migration:run` | Run pending migrations |
-| `npm run migration:revert` | Revert last migration |
+| Command                                     | Purpose                                  |
+| ------------------------------------------- | ---------------------------------------- |
+| `npm run start:dev`                         | Watch mode (sets `NODE_ENV=development`) |
+| `npm run start:prod`                        | Run compiled `dist/main`                 |
+| `npm run start:production`                  | PM2 via `ecosystem.config.js`            |
+| `npm test`                                  | Jest unit                                |
+| `npm run test:cov`                          | Coverage                                 |
+| `npm run test:e2e`                          | End-to-end (`test/jest-e2e.json`)        |
+| `npm run lint`                              | ESLint --fix                             |
+| `npm run build`                             | Compile to `dist/`                       |
+| `bash server.sh database backup`            | `pg_dump` (requires `PGPASSWORD`)        |
+| `FILE_NAME=AddX npm run migration:create`   | Create empty structure migration         |
+| `FILE_NAME=AddX npm run migration:generate` | Auto-diff entity vs DB → migration       |
+| `npm run migration:run`                     | Run pending migrations                   |
+| `npm run migration:revert`                  | Revert last migration                    |
 
 ## Convention
 
@@ -96,6 +96,21 @@ docker compose -f src/docker/postgresql/docker-compose.yml up -d
 docker compose -f src/docker/redis/docker-compose.yml up -d
 docker compose -f src/docker/rabbitmq/docker-compose.yml up -d
 ```
+
+## Build production image
+
+Multi-stage Dockerfile produces a non-root `node:20-alpine` runtime image (~250MB) with `dumb-init` PID 1 so SIGTERM reaches Nest and the graceful-shutdown hook fires. Migrations are NOT run in `CMD` — invoke them separately at deploy time.
+
+```bash
+docker build -t shopcore-server:<tag> .
+docker run --rm -p 3670:3670 \
+  -e DB_HOST=... -e DB_USER=... -e DB_PASSWORD=... -e DB_NAME=... \
+  -e RABBITMQ_URI=... -e REDIS_HOST=... \
+  -e JWT_ACCESS_PUBLIC_KEY=... -e JWT_ACCESS_PRIVATE_KEY=... \
+  shopcore-server:<tag>
+```
+
+Healthcheck hits `GET /health/liveness` every 30s (start period 30s).
 
 Postgres uses a named volume (`postgres_database`) so data survives restarts.
 
