@@ -1,14 +1,15 @@
 import { ApolloDriverConfig } from '@nestjs/apollo';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import depthLimit from 'graphql-depth-limit';
 import { createComplexityRule, simpleEstimator } from 'graphql-query-complexity';
-import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { JSONResolver } from 'graphql-scalars';
 import { join } from 'path';
 
 import { DataloaderService } from '../dataloader/dataloader.service';
 import { ERROR_CODES } from '../exceptions/constant.exception';
+import { MetricsPlugin } from '../graphql/metrics.plugin';
 import { EnvironmentVariables } from '../helpers/env.validation';
 import { SecurityHeadersPlugin } from '../security/security-headers.plugin';
 
@@ -63,7 +64,7 @@ export const graphqlConfig = async (
       req,
       res,
     }),
-    plugins: [SecurityHeadersPlugin],
+    plugins: [SecurityHeadersPlugin, MetricsPlugin],
     formatError: (error: GraphQLError): IGraphQLFormattedError => {
       const extensions = error?.extensions;
       return {

@@ -2,10 +2,12 @@ import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/commo
 import { ChannelModel, ConfirmChannel, connect, ConsumeMessage } from 'amqplib';
 import { firstValueFrom, map, Observable, take, timeout as rxTimeout } from 'rxjs';
 
+import { rabbitmqMessagesTotal } from '@/modules/metrics/metrics.registry';
+
 import { AbstractBase } from '../abstracts/base.abstract';
+import { MODULE_CONFIGS } from '../constants/module.constant';
 import { CoreContext } from '../contexts';
 import { RabbitMQModuleOptions } from './rabbitmq.module';
-import { MODULE_CONFIGS } from '../constants/module.constant';
 
 @Injectable()
 export class RabbitMQService extends AbstractBase implements OnModuleInit, OnModuleDestroy {
@@ -77,7 +79,14 @@ export class RabbitMQService extends AbstractBase implements OnModuleInit, OnMod
     const exchangeOptions = this.rabbitConfig.exchangeOptions || { durable: true };
     await this.channel.assertExchange(exchange, type, exchangeOptions);
 
-    return this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)));
+    try {
+      const ok = this.channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(message)));
+      rabbitmqMessagesTotal.labels('publish', routingKey, ok ? 'success' : 'buffered').inc();
+      return ok;
+    } catch (error) {
+      rabbitmqMessagesTotal.labels('publish', routingKey, 'error').inc();
+      throw error;
+    }
   }
 
   async request<T = unknown>(

@@ -13,8 +13,8 @@ import { typeOrmConfig } from './common/configs/typeorm.config';
 import { ContextModule } from './common/contexts/context.module';
 import { DataloaderModule } from './common/dataloader/dataloader.module';
 import { DataloaderService } from './common/dataloader/dataloader.service';
-import { getEnvPath } from './common/helpers/env.helper';
 import { GqlThrottlerGuard } from './common/guards/gql-throttler.guard';
+import { getEnvPath } from './common/helpers/env.helper';
 import { EnvironmentVariables, envValidation } from './common/helpers/env.validation';
 import { LoggerModule } from './common/logger/logger.module';
 import { RefreshTokenMiddleware } from './common/middlewares/refresh-token.middleware';
@@ -31,6 +31,7 @@ import { CartModule } from './modules/carts/cart.module';
 import { CategoryModule } from './modules/categories/category.module';
 import { ConversionUnitModule } from './modules/conversion-units/conversion-unit.module';
 import { FileUploadModule } from './modules/file-uploads/file-upload.module';
+import { MetricsModule } from './modules/metrics/metrics.module';
 import { OrderDetailModule } from './modules/order-details/order-detail.module';
 import { OrderHistoryModule } from './modules/order-histories/order-history.module';
 import { OrderShippingModule } from './modules/order-shippings/order-shipping.module';
@@ -99,6 +100,7 @@ import { UserModule } from './modules/users/user.module';
     CategoryModule,
     ConversionUnitModule,
     FileUploadModule,
+    MetricsModule,
     OrderDetailModule,
     OrderHistoryModule,
     OrderShippingModule,

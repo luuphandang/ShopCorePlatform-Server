@@ -184,6 +184,14 @@ export class EnvironmentVariables {
   @Min(1)
   @IsOptional()
   GRAPHQL_MAX_COMPLEXITY?: number;
+
+  @IsString()
+  @IsOptional()
+  METRICS_USER?: string;
+
+  @IsString()
+  @IsOptional()
+  METRICS_PASSWORD?: string;
 }
 
 export function envValidation(config: Record<string, unknown>): EnvironmentVariables {
