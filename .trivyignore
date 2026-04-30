@@ -85,3 +85,9 @@ CVE-2026-23897
 # bump to 11.x which would force the entire @nestjs/* stack with it; we
 # defer that to its own task. The vulnerable code path is unreachable.
 CVE-2026-40879
+
+# cross-spawn ReDoS. We force-resolve to 7.0.6 via package.json overrides
+# (verified in node_modules/cross-spawn/package.json). Trivy still reports
+# the older spec string from a deep transitive's package.json — same
+# dep-spec-string artifact as the tar entries above.
+CVE-2024-21538
