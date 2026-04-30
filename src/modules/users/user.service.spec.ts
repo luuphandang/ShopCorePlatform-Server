@@ -1,9 +1,10 @@
-import { ConfigService } from '@nestjs/config';
-import { ModuleRef } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { AppLogger } from '@/common/logger/logger.service';
-import { UtilService } from '@/common/utils/util.service';
+import { ServiceContext } from '@/common/contexts/service.context';
+import {
+  createMockServiceContext,
+  MockServiceContextOverrides,
+} from '@/common/testing/mock-context';
 
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
@@ -17,53 +18,22 @@ describe('UserService', () => {
     const mockUserRepository = {
       create: jest.fn(),
       executeInTransaction: jest.fn(),
+      getOne: jest.fn(),
+      getMany: jest.fn(),
+      getPagination: jest.fn().mockResolvedValue({ count: 0, data: [] }),
+      update: jest.fn(),
+    };
+
+    const moduleRefLookups: MockServiceContextOverrides['moduleRefLookups'] = {
+      RoleService: { getMany: jest.fn().mockResolvedValue([]) },
+      AuthService: { validateUser: jest.fn().mockResolvedValue(true) },
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserService,
-        {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn().mockReturnValue('test-value'),
-          },
-        },
-        {
-          provide: UtilService,
-          useValue: {},
-        },
-        {
-          provide: AppLogger,
-          useValue: {
-            log: jest.fn(),
-            error: jest.fn(),
-            warn: jest.fn(),
-            debug: jest.fn(),
-            verbose: jest.fn(),
-          },
-        },
-        {
-          provide: UserRepository,
-          useValue: mockUserRepository,
-        },
-        {
-          provide: ModuleRef,
-          useValue: {
-            get: jest.fn().mockImplementation((service) => {
-              if (service.name === 'RoleService') {
-                return {
-                  getMany: jest.fn().mockResolvedValue([]),
-                };
-              }
-              if (service.name === 'AuthService') {
-                return {
-                  validateUser: jest.fn().mockResolvedValue(true),
-                };
-              }
-              return {};
-            }),
-          },
-        },
+        { provide: ServiceContext, useValue: createMockServiceContext({ moduleRefLookups }) },
+        { provide: UserRepository, useValue: mockUserRepository },
       ],
     }).compile();
 
@@ -75,8 +45,8 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('Create user', () => {
-    it('create user successfully', async () => {
+  describe('createUser', () => {
+    it('creates a user when input is valid', async () => {
       const mockUser = {
         id: 1,
         email: 'test@test.com',
@@ -87,9 +57,9 @@ describe('UserService', () => {
         updated_at: new Date(),
       };
 
-      userRepository.executeInTransaction.mockImplementation(async (callback) => {
-        return callback();
-      });
+      userRepository.executeInTransaction.mockImplementation(
+        async (callback: () => Promise<unknown>) => callback(),
+      );
       userRepository.create.mockResolvedValue(mockUser as unknown as User);
 
       const user = await service.createUser({
@@ -105,38 +75,20 @@ describe('UserService', () => {
       expect(userRepository.create).toHaveBeenCalled();
     });
 
-    describe('create user failed', () => {
-      it('throw an error if email is already taken', async () => {
-        userRepository.executeInTransaction.mockImplementation(async (_callback) => {
-          throw new Error('Email already exists');
-        });
-
-        await expect(
-          service.createUser({
-            email: 'test@test.com',
-            password: '123456',
-            phone: '0909090909',
-            last_name: 'Test',
-            first_name: 'Test',
-          }),
-        ).rejects.toThrow('Email already exists');
+    it('rethrows when the transaction fails (eg duplicate email)', async () => {
+      userRepository.executeInTransaction.mockImplementation(async () => {
+        throw new Error('Email already exists');
       });
 
-      it('throw an error if email is already taken', async () => {
-        userRepository.executeInTransaction.mockImplementation(async (_callback) => {
-          throw new Error('Email already exists');
-        });
-
-        await expect(
-          service.createUser({
-            email: 'test@test.com',
-            password: '123456',
-            phone: '0909090909',
-            last_name: 'Test',
-            first_name: 'Test',
-          }),
-        ).rejects.toThrow('Email already exists');
-      });
+      await expect(
+        service.createUser({
+          email: 'test@test.com',
+          password: '123456',
+          phone: '0909090909',
+          last_name: 'Test',
+          first_name: 'Test',
+        }),
+      ).rejects.toThrow('Email already exists');
     });
   });
 });

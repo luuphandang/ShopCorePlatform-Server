@@ -1,0 +1,19 @@
+# Format: <CVE-ID>  # <reason> — review at <ISO date>
+# Trivy reads this file at the repo root for the workflow at .github/workflows/ci.yml.
+# Re-evaluate every entry quarterly — delete it once a stable fix lands in npm.
+
+# multer DoS via malformed requests. Latest stable on npm is 2.1.1 (Trivy DB
+# claims 2.1.2 is fixed but that version is unpublished as of 2026-04-30).
+# Storefront file uploads are throttled (60req/60s, task #20 metrics) and
+# behind authenticated mutation, so practical exposure is bounded. Drop this
+# entry once multer >=2.1.2 ships, or earlier if upstream backports.
+CVE-2026-3304
+CVE-2026-3520
+
+# picomatch ReDoS via crafted extglob patterns. The published 2.x line has
+# no fix (latest is 2.3.1; advertised 2.3.2 is not on npm). Fix exists in 3.x
+# and 4.x but those are breaking releases consumed transitively by chokidar
+# and glob; forcing them via `overrides` regressed several @nestjs/* peers
+# locally. The vulnerable code path is glob expansion at build/dev time only,
+# never on a request hot path. Drop once chokidar updates or 2.3.2 ships.
+CVE-2026-33671

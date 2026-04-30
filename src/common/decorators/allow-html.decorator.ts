@@ -10,6 +10,6 @@ export const AllowHtml = (): PropertyDecorator => {
   };
 };
 
-export const getAllowHtmlFields = (cls: Function): (string | symbol)[] => {
+export const getAllowHtmlFields = (cls: new (...args: never[]) => unknown): (string | symbol)[] => {
   return Reflect.getMetadata(ALLOW_HTML_KEY, cls) ?? [];
 };

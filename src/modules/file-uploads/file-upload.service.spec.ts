@@ -1,5 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 
+import { mockServiceContextProvider } from '@/common/testing/mock-context';
+
+import { FileUploadRepository } from './file-upload.repository';
 import { FileUploadService } from './file-upload.service';
 
 describe('FileUploadService', () => {
@@ -7,7 +10,11 @@ describe('FileUploadService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FileUploadService],
+      providers: [
+        FileUploadService,
+        mockServiceContextProvider(),
+        { provide: FileUploadRepository, useValue: {} },
+      ],
     }).compile();
 
     service = module.get<FileUploadService>(FileUploadService);

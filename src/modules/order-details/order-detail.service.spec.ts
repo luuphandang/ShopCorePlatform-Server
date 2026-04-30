@@ -1,5 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 
+import { mockServiceContextProvider } from '@/common/testing/mock-context';
+
+import { OrderDetailRepository } from './order-detail.repository';
 import { OrderDetailService } from './order-detail.service';
 
 describe('OrderDetailService', () => {
@@ -7,7 +10,11 @@ describe('OrderDetailService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [OrderDetailService],
+      providers: [
+        OrderDetailService,
+        mockServiceContextProvider(),
+        { provide: OrderDetailRepository, useValue: {} },
+      ],
     }).compile();
 
     service = module.get<OrderDetailService>(OrderDetailService);

@@ -1,6 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 
-import { ConversionUnitRepository } from './conversion-unit.repository';
+import { mockCoreContextProvider } from '@/common/testing/mock-context';
+
 import { ConversionUnitResolver } from './conversion-unit.resolver';
 import { ConversionUnitService } from './conversion-unit.service';
 
@@ -9,7 +10,11 @@ describe('ConversionUnitResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ConversionUnitResolver, ConversionUnitService, ConversionUnitRepository],
+      providers: [
+        ConversionUnitResolver,
+        mockCoreContextProvider(),
+        { provide: ConversionUnitService, useValue: {} },
+      ],
     }).compile();
 
     resolver = module.get<ConversionUnitResolver>(ConversionUnitResolver);

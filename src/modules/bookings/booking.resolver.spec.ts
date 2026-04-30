@@ -1,13 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
+
+import { mockCoreContextProvider } from '@/common/testing/mock-context';
 
 import { BookingResolver } from './booking.resolver';
+import { BookingService } from './booking.service';
 
 describe('BookingResolver', () => {
   let resolver: BookingResolver;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [BookingResolver],
+      providers: [
+        BookingResolver,
+        mockCoreContextProvider(),
+        { provide: BookingService, useValue: {} },
+      ],
     }).compile();
 
     resolver = module.get<BookingResolver>(BookingResolver);
