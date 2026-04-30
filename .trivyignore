@@ -72,3 +72,16 @@ CVE-2025-65945
 # path passes user input into lodash sinks. Drop when 4.18.0 ships and
 # parents follow.
 CVE-2026-4800
+
+# @apollo/server DoS via startStandaloneServer. We never start Apollo
+# standalone — the GraphQL endpoint is mounted via @nestjs/apollo (Nest's
+# Express driver). The vulnerable code path is unreachable in this app.
+# Drop when @apollo/server >=4.13.0 is pulled in by @nestjs/apollo.
+CVE-2026-23897
+
+# @nestjs/microservices DoS via recursive handleData in JsonSocket TCP
+# transport. We never bind a TCP microservice — RabbitMQ goes through
+# amqp-connection-manager directly, not Nest's transport. Fix is a major
+# bump to 11.x which would force the entire @nestjs/* stack with it; we
+# defer that to its own task. The vulnerable code path is unreachable.
+CVE-2026-40879
