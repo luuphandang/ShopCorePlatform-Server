@@ -5,20 +5,26 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Matches,
   Max,
   Min,
+  ValidateIf,
   validateSync,
 } from 'class-validator';
 
-export enum NODE_ENVIRONMENT {
-  development,
-  production,
-  test,
-}
+export type NodeEnv = 'development' | 'staging' | 'production' | 'test';
+
+const NODE_ENV_VALUES: NodeEnv[] = ['development', 'staging', 'production', 'test'];
+
+const isProd = (env: EnvironmentVariables): boolean => env.NODE_ENV === 'production';
+
+const COOKIE_DOMAIN_PROD_REGEX = /^\.[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/;
 
 export class EnvironmentVariables {
-  @IsEnum(NODE_ENVIRONMENT)
-  NODE_ENV: keyof typeof NODE_ENVIRONMENT;
+  @IsEnum(NODE_ENV_VALUES, {
+    message: `NODE_ENV must be one of: ${NODE_ENV_VALUES.join(', ')}`,
+  })
+  NODE_ENV: NodeEnv;
 
   @IsNumber()
   @Min(0)
@@ -52,8 +58,9 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   DB_USER: string;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'DB_PASSWORD is required when NODE_ENV=production' })
   DB_PASSWORD: string;
 
   @IsString()
@@ -94,12 +101,14 @@ export class EnvironmentVariables {
   @IsOptional()
   AWS_S3_SECRET_KEY?: string;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'AWS_S3_REGION is required when NODE_ENV=production' })
   AWS_S3_REGION?: string;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'AWS_S3_BUCKET_NAME is required when NODE_ENV=production' })
   AWS_S3_BUCKET_NAME?: string;
 
   @IsString()
@@ -128,18 +137,25 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   JWT_REFRESH_PRIVATE_KEY: string;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'COOKIE_DOMAIN is required when NODE_ENV=production' })
+  @Matches(COOKIE_DOMAIN_PROD_REGEX, {
+    message:
+      'COOKIE_DOMAIN must be a leading-dot domain like ".shopcore.example.com" when NODE_ENV=production (no localhost, no port)',
+  })
   COOKIE_DOMAIN?: string;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'REDIS_HOST is required when NODE_ENV=production' })
   REDIS_HOST?: string;
 
+  @ValidateIf(isProd)
   @IsNumber()
   @Min(0)
   @Max(65535)
-  @IsOptional()
+  @IsNotEmpty({ message: 'REDIS_PORT is required when NODE_ENV=production' })
   REDIS_PORT?: number;
 
   @IsString()
@@ -185,12 +201,14 @@ export class EnvironmentVariables {
   @IsOptional()
   GRAPHQL_MAX_COMPLEXITY?: number;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'METRICS_USER is required when NODE_ENV=production' })
   METRICS_USER?: string;
 
+  @ValidateIf(isProd)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'METRICS_PASSWORD is required when NODE_ENV=production' })
   METRICS_PASSWORD?: string;
 }
 
@@ -203,8 +221,18 @@ export function envValidation(config: Record<string, unknown>): EnvironmentVaria
     skipMissingProperties: false,
   });
 
-  if (errors.length) {
-    throw new Error(errors.toString());
+  const messages = errors
+    .map((error) => Object.values(error.constraints ?? {}).join('; '))
+    .filter(Boolean);
+
+  if (validatedConfig.NODE_ENV === 'production' && validatedConfig.DB_SYNCHRONIZE !== 'false') {
+    messages.push(
+      'DB_SYNCHRONIZE must be "false" when NODE_ENV=production (use migrations instead)',
+    );
+  }
+
+  if (messages.length) {
+    throw new Error(`Environment validation failed:\n  - ${messages.join('\n  - ')}`);
   }
 
   return validatedConfig;
