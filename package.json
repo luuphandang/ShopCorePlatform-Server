@@ -76,7 +76,7 @@
     "rxjs": "^7.8.1",
     "sanitize-html": "^2.17.1",
     "slugify": "^1.6.6",
-    "typeorm": "^0.3.20",
+    "typeorm": "^0.3.26",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
@@ -115,6 +115,13 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },
+  "overrides": {
+    "cross-spawn": "^7.0.5",
+    "path-to-regexp": "^0.1.13",
+    "sha.js": "^2.4.12",
+    "tar": "^7.5.11",
+    "validator": "^13.15.22"
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
@@ -131,6 +138,9 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
+    "setupFiles": [
+      "reflect-metadata"
+    ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"
     },

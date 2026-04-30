@@ -1,7 +1,7 @@
-import { FindOptionsWhere } from 'typeorm';
+import { DeepPartial, FindOptionsWhere } from 'typeorm';
 
-import { CustomBadRequestError } from '../exceptions/bad-request.exception';
 import { ServiceContext } from '../contexts/service.context';
+import { CustomBadRequestError } from '../exceptions/bad-request.exception';
 import { AbstractEntity } from './entity.abstract';
 import { AbstractRepository } from './repository.abstract';
 import { AbstractService, IServiceOptions } from './service.abstract';
@@ -35,7 +35,7 @@ export abstract class AbstractStatusService<
         });
       }
 
-      const currentStatus = (options.model as any).status as S;
+      const currentStatus = (options.model as T & { status: S }).status;
 
       if (!options.skipValidation) {
         this.validateStatusTransition(currentStatus, newStatus);
@@ -43,7 +43,11 @@ export abstract class AbstractStatusService<
 
       await this.beforeStatusChange(options.model, currentStatus, newStatus, options);
 
-      const result = await this.update(id, { status: newStatus } as any, options);
+      const result = await this.update(
+        id,
+        { status: newStatus } as unknown as DeepPartial<T>,
+        options,
+      );
 
       await this.afterStatusChange(result, currentStatus, newStatus, options);
 

@@ -1,0 +1,14 @@
+# Force LF line endings for all text files so Windows checkouts do not
+# produce CRLF and trip prettier on Linux CI.
+* text=auto eol=lf
+
+# Explicit binary types that must not be normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary

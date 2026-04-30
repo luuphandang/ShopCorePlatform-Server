@@ -1,15 +1,16 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { DeepPartial, FindOptionsWhere } from 'typeorm';
 
+import { IServiceOptions } from '@/common/abstracts/service.abstract';
 import {
   AbstractStatusService,
   IStatusChangeOptions,
   IStatusTransitionMap,
 } from '@/common/abstracts/status-service.abstract';
-import { IServiceOptions } from '@/common/abstracts/service.abstract';
-import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
-import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
 import { ServiceContext } from '@/common/contexts';
 import { EOrderStatus, EShippingStatus } from '@/common/enums/order.enum';
+import { CustomBadRequestError } from '@/common/exceptions/bad-request.exception';
+import { CustomNotFoundError } from '@/common/exceptions/not-found.exception';
 
 import { AddressService } from '../addresses/address.service';
 import { Address } from '../addresses/entities/address.entity';
@@ -46,7 +47,11 @@ const SHIPPING_TRANSITIONS: IStatusTransitionMap<EShippingStatus> = {
   [EShippingStatus.PENDING]: [EShippingStatus.CONFIRMED],
   [EShippingStatus.CONFIRMED]: [EShippingStatus.SHIPPED],
   [EShippingStatus.SHIPPED]: [EShippingStatus.IN_TRANSIT, EShippingStatus.RETURNED],
-  [EShippingStatus.IN_TRANSIT]: [EShippingStatus.DELIVERED, EShippingStatus.RETURNED, EShippingStatus.LOST],
+  [EShippingStatus.IN_TRANSIT]: [
+    EShippingStatus.DELIVERED,
+    EShippingStatus.RETURNED,
+    EShippingStatus.LOST,
+  ],
   [EShippingStatus.DELIVERED]: [EShippingStatus.RETURNED],
 };
 
@@ -142,10 +147,7 @@ export class OrderService
     return await this.changeStatus(id, EOrderStatus.PROCESSING, options);
   }
 
-  async shippedOrder(
-    id: number,
-    options: IStatusChangeOptions<Order> = {},
-  ): Promise<Order | null> {
+  async shippedOrder(id: number, options: IStatusChangeOptions<Order> = {}): Promise<Order | null> {
     await this.changeStatus(id, EOrderStatus.SHIPPED, options);
     return await this.changeShippingStatus(id, EShippingStatus.SHIPPED, options);
   }
@@ -217,13 +219,17 @@ export class OrderService
   ): Promise<Order | null> {
     try {
       if (!options.model) {
-        options.model = await this.getOne({ where: { id } as any });
+        options.model = await this.getOne({ where: { id } as FindOptionsWhere<Order> });
       }
 
       const currentShippingStatus = options.model.shipping_status as EShippingStatus;
       this.validateShippingTransition(currentShippingStatus, newStatus);
 
-      const result = await this.update(id, { shipping_status: newStatus } as any, options);
+      const result = await this.update(
+        id,
+        { shipping_status: newStatus } as unknown as DeepPartial<Order>,
+        options,
+      );
       if (!result) throw new Error('Cập nhật trạng thái vận chuyển đơn hàng không thành công.');
 
       await this.createOrderHistory(
